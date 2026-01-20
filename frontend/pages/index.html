@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>EstateMaster | Premium Real Estate Marketplace</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Epilogue:wght@300;400;500;600;700;800;900&amp;family=Manrope:wght@300;400;500;600;700&amp;display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#252e7e",
+                        "background-light": "#f6f6f8",
+                        "background-dark": "#13151f",
+                    },
+                    fontFamily: {
+                        "display": ["Epilogue", "sans-serif"],
+                        "sans": ["Manrope", "sans-serif"]
+                    },
+                    borderRadius: { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" },
+                },
+            },
+        }
+    </script>
+    <style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 20;
+        }
+
+        .bento-grid {
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            gap: 1.5rem;
+        }
+
+        .bento-item-large {
+            grid-column: span 8;
+        }
+
+        .bento-item-small {
+            grid-column: span 4;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar {
+            height: 4px;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #252e7e33;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+
+<body
+    class="bg-background-light dark:bg-background-dark font-sans text-slate-900 dark:text-slate-100 transition-colors duration-300">
+    <!-- Sticky Navigation -->
+    <nav
+        class="sticky top-0 z-50 bg-white/80 dark:bg-background-dark/80 backdrop-blur-md border-b border-slate-200 dark:border-slate-800">
+        <div class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
+            <div class="flex items-center gap-10">
+                <div class="flex items-center gap-2">
+                    <div class="bg-primary p-1.5 rounded-lg">
+                        <svg class="w-6 h-6 text-white" fill="none" viewbox="0 0 48 48"
+                            xmlns="http://www.w3.org/2000/svg">
+                            <path d="M44 4H30.6666V17.3334H17.3334V30.6666H4V44H44V4Z" fill="currentColor"></path>
+                        </svg>
+                    </div>
+                    <span
+                        class="text-xl font-display font-bold tracking-tight text-primary dark:text-white">EstateMaster</span>
+                </div>
+                <div class="hidden md:flex items-center gap-8">
+                    <a class="text-sm font-semibold hover:text-primary transition-colors" href="#">Buy</a>
+                    <a class="text-sm font-semibold hover:text-primary transition-colors" href="#">Rent</a>
+                    <a class="text-sm font-semibold hover:text-primary transition-colors" href="#">Sell</a>
+                    <a class="text-sm font-semibold hover:text-primary transition-colors" href="#">Insights</a>
+                </div>
+            </div>
+            <div class="flex items-center gap-4">
+                <button data-auth="signin"
+                    class="text-sm font-bold px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-all">Sign
+                    In</button>
+                <button data-auth="list-property"
+                    class="bg-primary text-white text-sm font-bold px-5 py-2.5 rounded-lg shadow-lg shadow-primary/20 hover:scale-[1.02] active:scale-95 transition-all">
+                    List Property
+                </button>
+                <div data-auth="user-profile" style="display: none;" class="relative flex items-center gap-2">
+                    <span data-user="name" class="text-sm font-semibold"></span>
+                </div>
+            </div>
+        </div>
+        </div>
+    </nav>
+    <main>
+        <!-- Hero Section -->
+        <section class="relative px-6 py-12 md:py-20 max-w-7xl mx-auto">
+            <div
+                class="relative rounded-3xl overflow-hidden min-h-[640px] flex flex-col items-center justify-center text-center p-8">
+                <div class="absolute inset-0 bg-cover bg-center transition-transform duration-700 hover:scale-105"
+                    data-alt="Modern minimalist glass villa in a forest"
+                    style="background-image: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.3)), url('https://lh3.googleusercontent.com/aida-public/AB6AXuB6v70EdQoOwH0sEoroH6PKxLXo9uxpPREPuTtF2kxr4AvuwMfzgt17CXr7wx4o_IsPpIoKSFuTEKuvGZPI1ezKW6tNcy9FQDTWIoJgJPeJk1q6GGn_FbUpXmtxQFPqFy3ueC1Iu6LTrbf8rUs7YPPtmCw_CAD8p1UuLIm92nivhVicih00l9WMt4NCtExq0vX3iOoIZhwp5LjWD8YqiJntX-wF5mNQsW9syxzbakm8uqTA7Baf9LI-O2N4vpvyLASVBtKi1tZVChk');">
+                </div>
+                <div class="relative z-10 max-w-3xl space-y-6">
+                    <h1 class="text-4xl md:text-7xl font-display font-black text-white leading-[1.1] tracking-tight">
+                        Find Your Architectural <span class="italic font-light">Masterpiece</span>
+                    </h1>
+                    <p class="text-lg md:text-xl text-white/90 font-light max-w-xl mx-auto">
+                        Curated collection of the world's most exclusive residential architecture.
+                    </p>
+                    <!-- Integrated Search Module -->
+                    <div
+                        class="mt-12 bg-white dark:bg-slate-900 p-2 md:p-3 rounded-2xl shadow-2xl flex flex-col md:flex-row items-center gap-2 max-w-4xl mx-auto border border-white/20">
+                        <div
+                            class="flex-1 flex items-center gap-3 px-4 w-full border-b md:border-b-0 md:border-r border-slate-100 dark:border-slate-800">
+                            <span class="material-symbols-outlined text-slate-400">search</span>
+                            <input
+                                class="w-full bg-transparent border-none focus:ring-0 text-sm md:text-base py-4 placeholder:text-slate-400"
+                                placeholder="Search by city or neighborhood" type="text" />
+                        </div>
+                        <!-- Chips / Quick Filters inside search -->
+                        <div class="hidden lg:flex items-center gap-2 px-2">
+                            <button
+                                class="flex items-center gap-2 bg-slate-50 dark:bg-slate-800 px-3 py-2 rounded-lg text-xs font-bold border border-slate-100 dark:border-slate-700">
+                                Type <span class="material-symbols-outlined text-[16px]">expand_more</span>
+                            </button>
+                            <button
+                                class="flex items-center gap-2 bg-slate-50 dark:bg-slate-800 px-3 py-2 rounded-lg text-xs font-bold border border-slate-100 dark:border-slate-700">
+                                Price <span class="material-symbols-outlined text-[16px]">expand_more</span>
+                            </button>
+                        </div>
+                        <button
+                            class="w-full md:w-auto bg-primary text-white font-bold px-8 py-4 rounded-xl flex items-center justify-center gap-2 hover:bg-opacity-90 transition-all">
+                            Search
+                        </button>
+                    </div>
+                </div>
+                <!-- Stats Badge -->
+                <div
+                    class="absolute bottom-10 left-1/2 -translate-x-1/2 flex items-center gap-8 bg-black/20 backdrop-blur-xl border border-white/10 px-8 py-4 rounded-full text-white">
+                    <div class="text-center">
+                        <div class="text-xl font-bold font-display">12k+</div>
+                        <div class="text-[10px] uppercase tracking-widest opacity-70">Sales</div>
+                    </div>
+                    <div class="w-px h-8 bg-white/20"></div>
+                    <div class="text-center">
+                        <div class="text-xl font-bold font-display">$4.2B</div>
+                        <div class="text-[10px] uppercase tracking-widest opacity-70">Volume</div>
+                    </div>
+                    <div class="w-px h-8 bg-white/20"></div>
+                    <div class="text-center">
+                        <div class="text-xl font-bold font-display">98%</div>
+                        <div class="text-[10px] uppercase tracking-widest opacity-70">Trust</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <!-- Featured Properties -->
+        <section class="px-6 py-16 max-w-7xl mx-auto">
+            <div class="flex justify-between items-end mb-10">
+                <div class="space-y-2">
+                    <span class="text-primary font-bold text-sm uppercase tracking-[0.2em]">Curated Selection</span>
+                    <h2 class="text-3xl md:text-4xl font-display font-bold dark:text-white">Featured Properties</h2>
+                </div>
+                <a class="flex items-center gap-2 text-sm font-bold border-b-2 border-primary pb-1 group" href="#">
+                    View all listings
+                    <span
+                        class="material-symbols-outlined group-hover:translate-x-1 transition-transform">arrow_forward</span>
+                </a>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- Card 1 -->
+                <div
+                    class="group bg-white dark:bg-slate-900 rounded-2xl overflow-hidden border border-slate-100 dark:border-slate-800 shadow-sm hover:shadow-xl transition-all duration-500">
+                    <div class="relative aspect-[4/3] overflow-hidden">
+                        <div class="absolute inset-0 bg-cover bg-center group-hover:scale-110 transition-transform duration-700"
+                            data-alt="Modern concrete house with large pool"
+                            style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCmZoeZcjUIkfBLQeJE0SHeBn6MUroTxyaJnEIfw8J1dbVhY4jGY8Z4Sdkp36Zr0xx91FoDcQ2ts8-CLsdZ9aCYT7gVUdpohHGWsQNmXA32XoJg3VO614syFzHM-wSjK4QbuHTFOGAY2mnNrbrx9jD9SBEAjgyiDkw8JN9B6B3kOuUzULKSXIXefB9aYS_SymtH3jToE1p_rypTht4qn5j5YyzgdZU5lAj_mjWGsowhZjT3l4et_u7ktjQMqq3fwODqU1xu_h8aGgo');">
+                        </div>
+                        <div class="absolute top-4 left-4 flex gap-2">
+                            <span
+                                class="bg-white/90 dark:bg-slate-900/90 backdrop-blur-md px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-wider">New
+                                Listing</span>
+                            <span
+                                class="bg-primary text-white px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-wider">Featured</span>
+                        </div>
+                        <button
+                            class="absolute top-4 right-4 bg-white/20 backdrop-blur-md hover:bg-white text-white hover:text-red-500 p-2 rounded-full transition-all">
+                            <span class="material-symbols-outlined">favorite</span>
+                        </button>
+                    </div>
+                    <div class="p-6 space-y-4">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <h3 class="text-xl font-display font-bold text-slate-900 dark:text-white">$4,250,000
+                                </h3>
+                                <p class="text-slate-500 dark:text-slate-400 text-sm">Bel Air, Los Angeles</p>
+                            </div>
+                        </div>
+                        <div
+                            class="flex items-center justify-between py-4 border-y border-slate-50 dark:border-slate-800 text-slate-600 dark:text-slate-400 text-xs font-medium">
+                            <div class="flex items-center gap-2">
+                                <span class="material-symbols-outlined text-[18px]">bed</span> 4 Beds
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <span class="material-symbols-outlined text-[18px]">bathtub</span> 5 Baths
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <span class="material-symbols-outlined text-[18px]">square_foot</span> 4,200 sqft
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Card 2 -->
+                <div
+                    class="group bg-white dark:bg-slate-900 rounded-2xl overflow-hidden border border-slate-100 dark:border-slate-800 shadow-sm hover:shadow-xl transition-all duration-500">
+                    <div class="relative aspect-[4/3] overflow-hidden">
+                        <div class="absolute inset-0 bg-cover bg-center group-hover:scale-110 transition-transform duration-700"
+                            data-alt="Luxury penthouse apartment overlooking city skyline"
+                            style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCxYT0lQLBbikHIVwU276-q702sl_hVIN2R01-4qRuhxiQAXa0O9mPAEHpBgW9p2oJAc_0CRxrI4slO95fBDnkAJfrSj1h3yl_nzXJyuGvK2-s-J1M21k4uuJOoLuSJwme_peI3b7SKtltn7pZpG-DXLY1S80NffeXVIgP-NYYuGsKeSwIx-lM4K4dBe4afdN8oWjShW9fkg9GZL_JVyf97nvTvxYKX4-FkqHE9T3KDrv9YZp3E8J76SA8j_AiLMCDw0OQ1LFRbBUo');">
+                        </div>
+                        <div class="absolute top-4 left-4">
+                            <span
+                                class="bg-white/90 dark:bg-slate-900/90 backdrop-blur-md px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-wider">New
+                                Listing</span>
+                        </div>
+                        <button
+                            class="absolute top-4 right-4 bg-white/20 backdrop-blur-md hover:bg-white text-white hover:text-red-500 p-2 rounded-full transition-all">
+                            <span class="material-symbols-outlined">favorite</span>
+                        </button>
+                    </div>
+                    <div class="p-6 space-y-4">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <h3 class="text-xl font-display font-bold text-slate-900 dark:text-white">$2,890,000
+                                </h3>
+                                <p class="text-slate-500 dark:text-slate-400 text-sm">Upper East Side, NY</p>
+                            </div>
+                        </div>
+                        <div
+                            class="flex items-center justify-between py-4 border-y border-slate-50 dark:border-slate-800 text-slate-600 dark:text-slate-400 text-xs font-medium">
+                            <div class="flex items-center gap-2">
+                                <span class="material-symbols-outlined text-[18px]">bed</span> 3 Beds
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <span class="material-symbols-outlined text-[18px]">bathtub</span> 3 Baths
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <span class="material-symbols-outlined text-[18px]">square_foot</span> 2,100 sqft
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Card 3 -->
+                <div
+                    class="group bg-white dark:bg-slate-900 rounded-2xl overflow-hidden border border-slate-100 dark:border-slate-800 shadow-sm hover:shadow-xl transition-all duration-500">
+                    <div class="relative aspect-[4/3] overflow-hidden">
+                        <div class="absolute inset-0 bg-cover bg-center group-hover:scale-110 transition-transform duration-700"
+                            data-alt="Stately townhouse with brick facade"
+                            style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuBL_7hPgkrQuDZXBDlWqf8PXn6OshN9WE1O0_P1dWgzPCw9dZeUp3Bh3aQs8qkKHMzlv3Y3xNmqxK5YmJlGj5t8yxQ-T4kdyzYSqODttUJpCyKD2xQEuZK6NbS6T6-9IEmDwpOz_RCjjPj5GrWsasJ5WJyiPwHeuQjX1ppaSN1vx1v_LIEF-yA7RU7fo2iruW4MXQ8LmnlEVzCObFKsEDbSBkuaVzVDmKdPyelLzKQA-3qPHiRB2QUoCLNwDUiVhXqfqVmUQdk4g1k');">
+                        </div>
+                        <button
+                            class="absolute top-4 right-4 bg-white/20 backdrop-blur-md hover:bg-white text-white hover:text-red-500 p-2 rounded-full transition-all">
+                            <span class="material-symbols-outlined">favorite</span>
+                        </button>
+                    </div>
+                    <div class="p-6 space-y-4">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <h3 class="text-xl font-display font-bold text-slate-900 dark:text-white">$5,100,000
+                                </h3>
+                                <p class="text-slate-500 dark:text-slate-400 text-sm">Chelsea, London</p>
+                            </div>
+                        </div>
+                        <div
+                            class="flex items-center justify-between py-4 border-y border-slate-50 dark:border-slate-800 text-slate-600 dark:text-slate-400 text-xs font-medium">
+                            <div class="flex items-center gap-2">
+                                <span class="material-symbols-outlined text-[18px]">bed</span> 5 Beds
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <span class="material-symbols-outlined text-[18px]">bathtub</span> 6 Baths
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <span class="material-symbols-outlined text-[18px]">square_foot</span> 5,400 sqft
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <!-- Popular Locations / Bento Grid -->
+        <section class="bg-background-light dark:bg-slate-950 py-24 px-6 overflow-hidden">
+            <div class="max-w-7xl mx-auto">
+                <div class="text-center mb-16 space-y-4">
+                    <h2 class="text-4xl font-display font-bold dark:text-white">Explore Locations</h2>
+                    <p class="text-slate-500 max-w-lg mx-auto">Discover properties in the most desirable architectural
+                        hubs across the globe.</p>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-4 lg:grid-cols-6 gap-6 h-[600px] md:h-[500px]">
+                    <!-- Large item -->
+                    <div class="md:col-span-2 lg:col-span-3 relative rounded-3xl overflow-hidden group cursor-pointer">
+                        <div class="absolute inset-0 bg-cover bg-center group-hover:scale-110 transition-transform duration-[1.5s]"
+                            data-alt="New York City skyline at dusk"
+                            style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCEkYToE0r9i6Ujl9Zf8uquA-dARptVsSvdSUtQk1GBZYFSE3JeiLMJX6flmZzF7LvCtnEr7VtZdqp6413PjLZkYMN_6r_NVSEypbFrVmxi7CRIxT1BciK50UgvD4XsVkfeK3fKltuoNI_-122scWBQbBYYPjMhyfnVLf-IyUKICIyelesfhiWNvvJU4KaYheLV3bDR4j3EDz6GqtvgAQVqPVY4Iswn_kH9i5LO1BZKUDThiRA6sKClk50UtGKinZ2P81nHwHQHcM0');">
+                        </div>
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
+                        <div class="absolute bottom-8 left-8 text-white">
+                            <h4 class="text-2xl font-display font-bold">New York</h4>
+                            <p class="text-sm opacity-80">1,240 Properties</p>
+                        </div>
+                    </div>
+                    <!-- Medium item -->
+                    <div class="md:col-span-2 lg:col-span-3 relative rounded-3xl overflow-hidden group cursor-pointer">
+                        <div class="absolute inset-0 bg-cover bg-center group-hover:scale-110 transition-transform duration-[1.5s]"
+                            data-alt="London Tower Bridge view"
+                            style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDojwFXyeexJ9oNESAmSswaKHqjvTaKB5mC5p1_0qkc8dW4VyeKrS4NZ3z9TwEQzHWRTQ9LNpW1hdpB9ZBYe5LJ5K4ssI9GHabU14O2brc2JGskv6ddmJJARjYgWLLvGQ72CEF0bimU-lEoc-mAKiXyIDKyEQULKXl7hyKtUTBHpBs1n16ZQJXjChxYhpihGPhxCr578T74f9Bemo1D9KwDks_KpAyQRoXc-gUMcVY1kgcXNhRmof8Y7C6daJ210JBQegB54nnSuVc');">
+                        </div>
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
+                        <div class="absolute bottom-8 left-8 text-white">
+                            <h4 class="text-2xl font-display font-bold">London</h4>
+                            <p class="text-sm opacity-80">890 Properties</p>
+                        </div>
+                    </div>
+                    <!-- Small item -->
+                    <div class="md:col-span-2 lg:col-span-2 relative rounded-3xl overflow-hidden group cursor-pointer">
+                        <div class="absolute inset-0 bg-cover bg-center group-hover:scale-110 transition-transform duration-[1.5s]"
+                            data-alt="Tokyo cityscape neon lights"
+                            style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuABnnIlavjGeqW52Z0752KaR-PANFh0OqI_RhdJ-AF5JxBwcTVGJsHyKSpS_Py119WWK5xwtaXj092uPqq6USc3GI1vjLBYYSVaz_CtUGyM7_orfwyATKOO9_3DrDYV5CiMrfANaMoQTIsmAH8sBGiMPULV1wyPVP_rWg5VbTLdX22pYa2pCjKQH0KmrQSnF8NKGUwMx87WpGonAl-JoXYXpIxEFEiYEvq0INFGopHVmpPAo-SngUVYpI9PYfcgBch-NJCDtUo_bGw');">
+                        </div>
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
+                        <div class="absolute bottom-8 left-8 text-white">
+                            <h4 class="text-xl font-display font-bold">Tokyo</h4>
+                            <p class="text-sm opacity-80">540 Properties</p>
+                        </div>
+                    </div>
+                    <!-- Small item -->
+                    <div class="md:col-span-2 lg:col-span-2 relative rounded-3xl overflow-hidden group cursor-pointer">
+                        <div class="absolute inset-0 bg-cover bg-center group-hover:scale-110 transition-transform duration-[1.5s]"
+                            data-alt="Paris Eiffel tower view"
+                            style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCMqM0XTerTd9-lZBe6-954wgXcM3_XLvsMzHlA73ZCWU1PAZ5YUulVt75tCjotJps5J1D4cIDx6KF6ivQNIKAf48QfO09J-mmj3DMo7TyxeJqRO6gpwyU_F-u_kOvlw2y-QoWMrVA7adAKHXfZrs6epJZKP6a5fb9J_mW3wbc3Yv_vgkbdESI0ZbrLx8xEJa_Lw0ZpWHvdm45ePxpSaKJRt4hkLeL4FIQXom3wesgQ77qip7eHca2blH0Ww2kUHSL9LqDtvL8RJIE');">
+                        </div>
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
+                        <div class="absolute bottom-8 left-8 text-white">
+                            <h4 class="text-xl font-display font-bold">Paris</h4>
+                            <p class="text-sm opacity-80">720 Properties</p>
+                        </div>
+                    </div>
+                    <!-- Small item -->
+                    <div class="md:col-span-4 lg:col-span-2 relative rounded-3xl overflow-hidden group cursor-pointer">
+                        <div class="absolute inset-0 bg-cover bg-center group-hover:scale-110 transition-transform duration-[1.5s]"
+                            data-alt="Sydney Opera House view"
+                            style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuAwoqAVsG7_2KW_1inKMoJCL0sMNieeFAXrtINC8nP9bOT2ypDrFP19IVdQDC81VJwOLbfPMuMXKHZHMQT3U_62u6Nr3OTFfd-6pPVZ80kA9d9C9UeZfTNL3U7NpFMwpsbtpVcM5HQ4JQahzepH5Fj7A8bNHOAhyCaX9CcXmqfcQ5R9gxyiaGR7FD2e7c5CsClPgOJ0VGC58eNKWyasSoRhUJbyCwrWMQ-1DBN5LU7Otfo4C_n2yrdigBhEXR8y284W3m5cHRfcOf0');">
+                        </div>
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
+                        <div class="absolute bottom-8 left-8 text-white">
+                            <h4 class="text-xl font-display font-bold">Sydney</h4>
+                            <p class="text-sm opacity-80">430 Properties</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <!-- CTA Section -->
+        <section class="px-6 py-24 max-w-7xl mx-auto">
+            <div
+                class="bg-primary rounded-[2.5rem] p-12 md:p-20 relative overflow-hidden flex flex-col items-center text-center space-y-8">
+                <div class="absolute top-0 right-0 w-96 h-96 bg-white/10 rounded-full blur-3xl -mr-48 -mt-48"></div>
+                <div class="absolute bottom-0 left-0 w-64 h-64 bg-white/10 rounded-full blur-3xl -ml-32 -mb-32"></div>
+                <h2
+                    class="text-4xl md:text-6xl font-display font-bold text-white max-w-3xl leading-tight relative z-10">
+                    Ready to list your own <span class="text-slate-300">architectural</span> jewel?
+                </h2>
+                <p class="text-lg text-slate-200/80 max-w-xl relative z-10">
+                    Connect with high-net-worth buyers globally. Our platform handles the discovery, you handle the
+                    keys.
+                </p>
+                <div class="flex flex-col md:flex-row gap-4 relative z-10">
+                    <button
+                        class="bg-white text-primary font-bold px-10 py-5 rounded-2xl hover:bg-slate-50 transition-all text-lg">List
+                        Your Property</button>
+                    <button
+                        class="border border-white/30 text-white font-bold px-10 py-5 rounded-2xl hover:bg-white/10 transition-all text-lg">Contact
+                        Agent</button>
+                </div>
+            </div>
+        </section>
+    </main>
+    <!-- Footer -->
+    <footer class="bg-white dark:bg-background-dark border-t border-slate-200 dark:border-slate-800 pt-20 pb-12 px-6">
+        <div class="max-w-7xl mx-auto">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-20">
+                <div class="space-y-6">
+                    <div class="flex items-center gap-2">
+                        <div class="bg-primary p-1 rounded-lg">
+                            <svg class="w-5 h-5 text-white" fill="none" viewbox="0 0 48 48"
+                                xmlns="http://www.w3.org/2000/svg">
+                                <path d="M44 4H30.6666V17.3334H17.3334V30.6666H4V44H44V4Z" fill="currentColor"></path>
+                            </svg>
+                        </div>
+                        <span
+                            class="text-lg font-display font-bold tracking-tight text-primary dark:text-white">EstateMaster</span>
+                    </div>
+                    <p class="text-slate-500 dark:text-slate-400 text-sm leading-relaxed">
+                        Redefining the luxury real estate experience through architectural focus and seamless
+                        technology.
+                    </p>
+                    <div class="flex gap-4">
+                        <a class="text-slate-400 hover:text-primary transition-colors" href="#"><span
+                                class="material-symbols-outlined">share</span></a>
+                        <a class="text-slate-400 hover:text-primary transition-colors" href="#"><span
+                                class="material-symbols-outlined">public</span></a>
+                        <a class="text-slate-400 hover:text-primary transition-colors" href="#"><span
+                                class="material-symbols-outlined">chat</span></a>
+                    </div>
+                </div>
+                <div class="space-y-6">
+                    <h5 class="font-bold text-sm uppercase tracking-widest text-slate-900 dark:text-white">Platform</h5>
+                    <ul class="space-y-4 text-sm text-slate-500 dark:text-slate-400 font-medium">
+                        <li><a class="hover:text-primary transition-colors" href="#">Browse Listings</a></li>
+                        <li><a class="hover:text-primary transition-colors" href="#">Market Insights</a></li>
+                        <li><a class="hover:text-primary transition-colors" href="#">Agent Portal</a></li>
+                        <li><a class="hover:text-primary transition-colors" href="#">Property Management</a></li>
+                    </ul>
+                </div>
+                <div class="space-y-6">
+                    <h5 class="font-bold text-sm uppercase tracking-widest text-slate-900 dark:text-white">Company</h5>
+                    <ul class="space-y-4 text-sm text-slate-500 dark:text-slate-400 font-medium">
+                        <li><a class="hover:text-primary transition-colors" href="#">Our Vision</a></li>
+                        <li><a class="hover:text-primary transition-colors" href="#">Design Partners</a></li>
+                        <li><a class="hover:text-primary transition-colors" href="#">Careers</a></li>
+                        <li><a class="hover:text-primary transition-colors" href="#">Press Kit</a></li>
+                    </ul>
+                </div>
+                <div class="space-y-6">
+                    <h5 class="font-bold text-sm uppercase tracking-widest text-slate-900 dark:text-white">Subscribe
+                    </h5>
+                    <p class="text-sm text-slate-500 dark:text-slate-400">Join our newsletter for weekly architectural
+                        inspiration.</p>
+                    <form class="flex gap-2">
+                        <input
+                            class="flex-1 bg-slate-50 dark:bg-slate-800 border-none rounded-xl text-sm focus:ring-primary"
+                            placeholder="Email address" type="email" />
+                        <button class="bg-primary text-white p-2.5 rounded-xl hover:bg-opacity-90">
+                            <span class="material-symbols-outlined">send</span>
+                        </button>
+                    </form>
+                </div>
+            </div>
+            <div
+                class="border-t border-slate-100 dark:border-slate-800 pt-8 flex flex-col md:flex-row justify-between items-center gap-6 text-[10px] uppercase tracking-[0.2em] font-black text-slate-400">
+                <p>© 2024 EstateMaster Global. All Rights Reserved.</p>
+                <div class="flex gap-8">
+                    <a class="hover:text-slate-900 dark:hover:text-white" href="#">Privacy Policy</a>
+                    <a class="hover:text-slate-900 dark:hover:text-white" href="#">Terms of Service</a>
+                    <a class="hover:text-slate-900 dark:hover:text-white" href="#">Cookie Policy</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- API Integration Scripts -->
+    <script src="../assets/js/api.js"></script>
+    <script src="../assets/js/utils.js"></script>
+    <script src="../assets/js/auth.js"></script>
+    <script src="../assets/js/services.js"></script>
+    <script src="../assets/js/homepage.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>EstateMarket | Property Search Listings</title>
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Epilogue:wght@300;400;500;600;700&amp;display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <!-- Scripts -->
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#252e7e",
+                        "background-light": "#f6f6f8",
+                        "background-dark": "#13151f",
+                    },
+                    fontFamily: {
+                        "display": ["Epilogue", "sans-serif"]
+                    },
+                    borderRadius: { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" },
+                },
+            },
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Epilogue', sans-serif;
+        }
+
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+</head>
+
+<body
+    class="bg-background-light dark:bg-background-dark font-display text-[#121317] dark:text-white transition-colors duration-300">
+    <div class="flex flex-col min-h-screen">
+        <!-- Top Navigation -->
+        <header
+            class="sticky top-0 z-50 w-full border-b border-[#e2e4e9] dark:border-white/10 bg-white/80 dark:bg-background-dark/80 backdrop-blur-md">
+            <div class="max-w-[1440px] mx-auto px-6 h-16 flex items-center justify-between">
+                <div class="flex items-center gap-10">
+                    <div class="flex items-center gap-2.5">
+                        <div class="bg-primary p-1.5 rounded-lg">
+                            <svg class="size-6 text-white" fill="none" viewbox="0 0 48 48"
+                                xmlns="http://www.w3.org/2000/svg">
+                                <path
+                                    d="M39.5563 34.1455V13.8546C39.5563 15.708 36.8773 17.3437 32.7927 18.3189C30.2914 18.916 27.263 19.2655 24 19.2655C20.737 19.2655 17.7086 18.916 15.2073 18.3189C11.1227 17.3437 8.44365 15.708 8.44365 13.8546V34.1455C8.44365 35.9988 11.1227 37.6346 15.2073 38.6098C17.7086 39.2069 20.737 39.5564 24 39.5564C27.263 39.5564 30.2914 39.2069 32.7927 38.6098C36.8773 37.6346 39.5563 35.9988 39.5563 34.1455Z"
+                                    fill="currentColor"></path>
+                            </svg>
+                        </div>
+                        <h2 class="text-xl font-bold tracking-tight">EstateMarket</h2>
+                    </div>
+                    <nav class="hidden lg:flex items-center gap-6">
+                        <a class="text-sm font-semibold hover:text-primary transition-colors" href="#">Buy</a>
+                        <a class="text-sm font-semibold text-primary underline underline-offset-8" href="#">Rent</a>
+                        <a class="text-sm font-semibold hover:text-primary transition-colors" href="#">Sell</a>
+                        <a class="text-sm font-semibold hover:text-primary transition-colors" href="#">Agents</a>
+                    </nav>
+                </div>
+                <div class="flex items-center gap-4 flex-1 max-w-md mx-8">
+                    <div class="relative w-full">
+                        <span
+                            class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">search</span>
+                        <input
+                            class="w-full bg-[#f1f1f4] dark:bg-white/5 border-none rounded-xl pl-10 pr-4 py-2 text-sm focus:ring-2 focus:ring-primary/20"
+                            placeholder="Search location, project, or developer..." type="text" />
+                    </div>
+                </div>
+                <div class="flex items-center gap-3">
+                    <button class="p-2 rounded-xl bg-[#f1f1f4] dark:bg-white/5 hover:bg-gray-200 transition-colors">
+                        <span class="material-symbols-outlined text-[22px]">notifications</span>
+                    </button>
+                    <div data-auth="user-profile" style="display: none;" class="relative flex items-center gap-2">
+                        <span data-user="name" class="text-sm font-semibold"></span>
+                    </div>
+                </div>
+            </div>
+        </header>
+        <main class="flex-1 max-w-[1440px] mx-auto px-6 py-8 flex gap-8">
+            <!-- Left Sidebar: Filters -->
+            <aside class="w-72 hidden lg:flex flex-col gap-6 sticky top-24 h-fit pb-10">
+                <div
+                    class="bg-white dark:bg-white/5 rounded-xl border border-[#e2e4e9] dark:border-white/10 p-5 space-y-8 shadow-sm">
+                    <div>
+                        <div class="flex items-center justify-between mb-2">
+                            <h3 class="font-bold text-lg">Filters</h3>
+                            <button
+                                class="text-xs font-bold text-primary dark:text-primary/80 uppercase tracking-wider">Reset</button>
+                        </div>
+                        <p class="text-xs text-gray-500 dark:text-gray-400">Showing 428 results in California</p>
+                    </div>
+                    <!-- Price Slider -->
+                    <div class="space-y-4">
+                        <label class="text-sm font-bold flex items-center gap-2">
+                            <span class="material-symbols-outlined text-primary text-xl">payments</span>
+                            Price Range
+                        </label>
+                        <div class="relative pt-6 pb-2">
+                            <div class="h-1.5 w-full bg-[#f1f1f4] dark:bg-white/10 rounded-full relative">
+                                <div class="absolute left-[20%] right-[30%] h-full bg-primary rounded-full"></div>
+                                <div
+                                    class="absolute left-[20%] top-1/2 -translate-y-1/2 size-4 bg-white border-2 border-primary rounded-full shadow-md cursor-pointer">
+                                </div>
+                                <div
+                                    class="absolute right-[30%] top-1/2 -translate-y-1/2 size-4 bg-white border-2 border-primary rounded-full shadow-md cursor-pointer">
+                                </div>
+                            </div>
+                            <div class="flex justify-between mt-4">
+                                <span
+                                    class="text-xs font-medium px-2 py-1 bg-[#f1f1f4] dark:bg-white/5 rounded">$450k</span>
+                                <span
+                                    class="text-xs font-medium px-2 py-1 bg-[#f1f1f4] dark:bg-white/5 rounded">$3.2M</span>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Property Type Chips -->
+                    <div class="space-y-3">
+                        <label class="text-sm font-bold flex items-center gap-2">
+                            <span class="material-symbols-outlined text-primary text-xl">apartment</span>
+                            Property Type
+                        </label>
+                        <div class="flex flex-wrap gap-2">
+                            <div
+                                class="px-3 py-1.5 rounded-lg bg-primary text-white text-xs font-medium cursor-pointer">
+                                Apartment</div>
+                            <div
+                                class="px-3 py-1.5 rounded-lg bg-[#f1f1f4] dark:bg-white/5 text-xs font-medium cursor-pointer hover:bg-gray-200">
+                                Villa</div>
+                            <div
+                                class="px-3 py-1.5 rounded-lg bg-[#f1f1f4] dark:bg-white/5 text-xs font-medium cursor-pointer hover:bg-gray-200">
+                                Townhouse</div>
+                            <div
+                                class="px-3 py-1.5 rounded-lg bg-[#f1f1f4] dark:bg-white/5 text-xs font-medium cursor-pointer hover:bg-gray-200">
+                                Loft</div>
+                        </div>
+                    </div>
+                    <!-- Bedrooms Segmented -->
+                    <div class="space-y-3">
+                        <label class="text-sm font-bold flex items-center gap-2">
+                            <span class="material-symbols-outlined text-primary text-xl">bed</span>
+                            Bedrooms
+                        </label>
+                        <div class="flex bg-[#f1f1f4] dark:bg-white/5 p-1 rounded-xl">
+                            <button
+                                class="flex-1 py-1.5 text-xs font-medium rounded-lg hover:bg-white dark:hover:bg-white/10 transition-all">Any</button>
+                            <button
+                                class="flex-1 py-1.5 text-xs font-medium bg-white dark:bg-white/10 shadow-sm rounded-lg">2+</button>
+                            <button
+                                class="flex-1 py-1.5 text-xs font-medium rounded-lg hover:bg-white dark:hover:bg-white/10 transition-all">3+</button>
+                            <button
+                                class="flex-1 py-1.5 text-xs font-medium rounded-lg hover:bg-white dark:hover:bg-white/10 transition-all">4+</button>
+                        </div>
+                    </div>
+                    <!-- Amenities Checkbox -->
+                    <div class="space-y-3">
+                        <label class="text-sm font-bold flex items-center gap-2">
+                            <span class="material-symbols-outlined text-primary text-xl">colors_spark</span>
+                            Amenities
+                        </label>
+                        <div class="space-y-2">
+                            <label class="flex items-center gap-3 cursor-pointer group">
+                                <input checked="" class="rounded border-gray-300 text-primary focus:ring-primary"
+                                    type="checkbox" />
+                                <span
+                                    class="text-sm text-gray-600 dark:text-gray-300 group-hover:text-primary transition-colors">Swimming
+                                    Pool</span>
+                            </label>
+                            <label class="flex items-center gap-3 cursor-pointer group">
+                                <input class="rounded border-gray-300 text-primary focus:ring-primary"
+                                    type="checkbox" />
+                                <span
+                                    class="text-sm text-gray-600 dark:text-gray-300 group-hover:text-primary transition-colors">Fitness
+                                    Center</span>
+                            </label>
+                            <label class="flex items-center gap-3 cursor-pointer group">
+                                <input checked="" class="rounded border-gray-300 text-primary focus:ring-primary"
+                                    type="checkbox" />
+                                <span
+                                    class="text-sm text-gray-600 dark:text-gray-300 group-hover:text-primary transition-colors">Private
+                                    Security</span>
+                            </label>
+                            <label class="flex items-center gap-3 cursor-pointer group">
+                                <input class="rounded border-gray-300 text-primary focus:ring-primary"
+                                    type="checkbox" />
+                                <span
+                                    class="text-sm text-gray-600 dark:text-gray-300 group-hover:text-primary transition-colors">EV
+                                    Charging</span>
+                            </label>
+                        </div>
+                    </div>
+                    <button
+                        class="w-full bg-primary text-white py-3 rounded-xl font-bold text-sm shadow-lg shadow-primary/20 hover:brightness-110 active:scale-[0.98] transition-all">
+                        Apply Filters
+                    </button>
+                </div>
+            </aside>
+            <!-- Main Content Grid -->
+            <section class="flex-1">
+                <!-- Sorting & View Options -->
+                <div class="flex items-center justify-between mb-8">
+                    <div>
+                        <h1 class="text-2xl font-bold">Featured Properties</h1>
+                        <p class="text-sm text-gray-500">Handpicked premium listings just for you</p>
+                    </div>
+                    <div class="flex items-center gap-4">
+                        <div
+                            class="flex bg-white dark:bg-white/5 border border-[#e2e4e9] dark:border-white/10 p-1 rounded-xl">
+                            <button class="p-1.5 rounded-lg bg-[#f1f1f4] dark:bg-white/10"><span
+                                    class="material-symbols-outlined text-[20px]">grid_view</span></button>
+                            <button class="p-1.5 rounded-lg"><span
+                                    class="material-symbols-outlined text-[20px]">view_list</span></button>
+                        </div>
+                        <select
+                            class="bg-white dark:bg-white/5 border border-[#e2e4e9] dark:border-white/10 rounded-xl px-4 py-2 text-sm font-medium focus:ring-primary/20 cursor-pointer">
+                            <option>Sort by: Newest First</option>
+                            <option>Price: Low to High</option>
+                            <option>Price: High to Low</option>
+                            <option>Sq Ft: Largest First</option>
+                        </select>
+                    </div>
+                </div>
+                <!-- Property Grid -->
+                <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+                    <!-- Property Card 1 -->
+                    <div
+                        class="group bg-white dark:bg-white/5 rounded-2xl overflow-hidden border border-[#e2e4e9] dark:border-white/10 hover:shadow-2xl hover:shadow-primary/5 transition-all duration-300">
+                        <div class="relative aspect-[4/3] overflow-hidden">
+                            <div class="absolute inset-0 bg-cover bg-center group-hover:scale-110 transition-transform duration-700"
+                                data-alt="Modern luxury villa with private infinity pool"
+                                style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuChG2XLNu4pJuI2GPGTIpUmwAp7IhtZ0833zzfbnV-H2AcXnHbM1eAe9-cEF-Mcd71GKsZrrjNAY25Byh3PP9kOiZsyxwrdcS7o_CZHu-REJihyv__ly3e8cwhNsz7nfeTx_S8w__Hv-IRNw6ZbSyX_Qh2x4zG0bI31p4ZnIriw0GHTpbMXtJNSo2_gN9ArsF_tO7ngL15KOTTenGVsqc8R00tnv4opL8vzIbWyYJUzOqNsvpORitBaW1MHE9y6R95n65iUlCrf7gM')">
+                            </div>
+                            <div
+                                class="absolute top-4 left-4 bg-white/90 dark:bg-black/80 backdrop-blur-sm px-3 py-1 rounded-full flex items-center gap-1.5">
+                                <div class="size-2 rounded-full bg-green-500 animate-pulse"></div>
+                                <span class="text-[10px] font-bold uppercase tracking-widest">New Listing</span>
+                            </div>
+                            <button
+                                class="absolute top-4 right-4 size-9 rounded-full bg-white/20 hover:bg-white/40 backdrop-blur-md flex items-center justify-center text-white transition-all">
+                                <span class="material-symbols-outlined text-[20px]">favorite</span>
+                            </button>
+                            <div
+                                class="absolute bottom-4 left-4 bg-primary text-white px-4 py-1.5 rounded-xl font-bold text-lg shadow-xl">
+                                $1,850,000
+                            </div>
+                        </div>
+                        <div class="p-5 space-y-3">
+                            <div>
+                                <h3 class="font-bold text-lg leading-tight group-hover:text-primary transition-colors">
+                                    Crystal Waters Estate</h3>
+                                <div class="flex items-center gap-1 text-gray-500 text-xs mt-1">
+                                    <span class="material-symbols-outlined text-sm">location_on</span>
+                                    Malibu, CA 90265
+                                </div>
+                            </div>
+                            <div
+                                class="flex items-center justify-between pt-4 border-t border-[#e2e4e9] dark:border-white/10">
+                                <div class="flex flex-col gap-0.5">
+                                    <span class="text-[10px] uppercase font-bold text-gray-400">Bedrooms</span>
+                                    <div class="flex items-center gap-1.5 font-bold">
+                                        <span class="material-symbols-outlined text-lg text-primary">bed</span> 4 BHK
+                                    </div>
+                                </div>
+                                <div class="flex flex-col gap-0.5">
+                                    <span class="text-[10px] uppercase font-bold text-gray-400">Total Area</span>
+                                    <div class="flex items-center gap-1.5 font-bold">
+                                        <span class="material-symbols-outlined text-lg text-primary">straighten</span>
+                                        3,450 sq ft
+                                    </div>
+                                </div>
+                                <div class="flex flex-col gap-0.5">
+                                    <span class="text-[10px] uppercase font-bold text-gray-400">Bath</span>
+                                    <div class="flex items-center gap-1.5 font-bold">
+                                        <span class="material-symbols-outlined text-lg text-primary">bathtub</span> 3
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Property Card 2 -->
+                    <div
+                        class="group bg-white dark:bg-white/5 rounded-2xl overflow-hidden border border-[#e2e4e9] dark:border-white/10 hover:shadow-2xl hover:shadow-primary/5 transition-all duration-300">
+                        <div class="relative aspect-[4/3] overflow-hidden">
+                            <div class="absolute inset-0 bg-cover bg-center group-hover:scale-110 transition-transform duration-700"
+                                data-alt="Brutalist architectural home with large windows"
+                                style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuBtkXL26QCDHyKk9f8puz7KlrPhnGkLuPHjPslxmquUfeHctZT557g6qVHTiUTkw_3UOLRCLgnwIqmcwZFO0dj3AV4rrViXCTv2_UUlJg7bVMkkPa6c9a4f7IUPDOPNjtLTCDr0I9SvzyOgoNgRbnfAB_489_aC9LJ92muL-s0YmE84aJyzdOJaQhLkZ8J9P9KVml8f7C6_sMnmfLbRTy09gDbQJG2DlDMZh8EOIR6lJjub2TDK_2eKDlOSJ7v7upg78ofAnMW0CrE')">
+                            </div>
+                            <div
+                                class="absolute top-4 left-4 bg-primary/90 dark:bg-primary/80 backdrop-blur-sm px-3 py-1 rounded-full flex items-center gap-1.5">
+                                <span class="text-[10px] text-white font-bold uppercase tracking-widest">Featured</span>
+                            </div>
+                            <button
+                                class="absolute top-4 right-4 size-9 rounded-full bg-white/20 hover:bg-white/40 backdrop-blur-md flex items-center justify-center text-white transition-all">
+                                <span class="material-symbols-outlined text-[20px]">favorite</span>
+                            </button>
+                            <div
+                                class="absolute bottom-4 left-4 bg-primary text-white px-4 py-1.5 rounded-xl font-bold text-lg shadow-xl">
+                                $2,120,000
+                            </div>
+                        </div>
+                        <div class="p-5 space-y-3">
+                            <div>
+                                <h3 class="font-bold text-lg leading-tight group-hover:text-primary transition-colors">
+                                    The Concrete Sanctuary</h3>
+                                <div class="flex items-center gap-1 text-gray-500 text-xs mt-1">
+                                    <span class="material-symbols-outlined text-sm">location_on</span>
+                                    Beverly Hills, CA
+                                </div>
+                            </div>
+                            <div
+                                class="flex items-center justify-between pt-4 border-t border-[#e2e4e9] dark:border-white/10">
+                                <div class="flex flex-col gap-0.5">
+                                    <span class="text-[10px] uppercase font-bold text-gray-400">Bedrooms</span>
+                                    <div class="flex items-center gap-1.5 font-bold">
+                                        <span class="material-symbols-outlined text-lg text-primary">bed</span> 5 BHK
+                                    </div>
+                                </div>
+                                <div class="flex flex-col gap-0.5">
+                                    <span class="text-[10px] uppercase font-bold text-gray-400">Total Area</span>
+                                    <div class="flex items-center gap-1.5 font-bold">
+                                        <span class="material-symbols-outlined text-lg text-primary">straighten</span>
+                                        4,800 sq ft
+                                    </div>
+                                </div>
+                                <div class="flex flex-col gap-0.5">
+                                    <span class="text-[10px] uppercase font-bold text-gray-400">Bath</span>
+                                    <div class="flex items-center gap-1.5 font-bold">
+                                        <span class="material-symbols-outlined text-lg text-primary">bathtub</span> 5
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Property Card 3 -->
+                    <div
+                        class="group bg-white dark:bg-white/5 rounded-2xl overflow-hidden border border-[#e2e4e9] dark:border-white/10 hover:shadow-2xl hover:shadow-primary/5 transition-all duration-300">
+                        <div class="relative aspect-[4/3] overflow-hidden">
+                            <div class="absolute inset-0 bg-cover bg-center group-hover:scale-110 transition-transform duration-700"
+                                data-alt="Modern penthouse with city skyline view"
+                                style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuD1pHtsKEZySfl7LxL2-P81zvKRBmnZDgDKU-LiWp51BX-gtRO86tjSH-m7tffFDZT8tA7x4QQp750zC4pSLXcUC0-Hv4M6BkOAUtFF0ou-GwNSka2pO0t8WxlcketmPz69xl8URuiOJ_HL1PX2wvM6twovZ6T_09_A3Iqy7B8tJmoTG8bzxhy39rXrqa_vk3zNI6KtDSEk2hHn1HoorXnrasjTpHrv97IgdnE0q_sYpSJ-iBR-dtGivRA51zvK1sNJqVD1tBXRs38')">
+                            </div>
+                            <div
+                                class="absolute top-4 left-4 bg-orange-500/90 dark:bg-orange-500/80 backdrop-blur-sm px-3 py-1 rounded-full flex items-center gap-1.5">
+                                <span class="text-[10px] text-white font-bold uppercase tracking-widest">Price
+                                    Dropped</span>
+                            </div>
+                            <button
+                                class="absolute top-4 right-4 size-9 rounded-full bg-white/20 hover:bg-white/40 backdrop-blur-md flex items-center justify-center text-white transition-all">
+                                <span class="material-symbols-outlined text-[20px]">favorite</span>
+                            </button>
+                            <div
+                                class="absolute bottom-4 left-4 bg-primary text-white px-4 py-1.5 rounded-xl font-bold text-lg shadow-xl">
+                                $950,000
+                            </div>
+                        </div>
+                        <div class="p-5 space-y-3">
+                            <div>
+                                <h3 class="font-bold text-lg leading-tight group-hover:text-primary transition-colors">
+                                    Skyline Loft Penthouse</h3>
+                                <div class="flex items-center gap-1 text-gray-500 text-xs mt-1">
+                                    <span class="material-symbols-outlined text-sm">location_on</span>
+                                    Downtown San Diego, CA
+                                </div>
+                            </div>
+                            <div
+                                class="flex items-center justify-between pt-4 border-t border-[#e2e4e9] dark:border-white/10">
+                                <div class="flex flex-col gap-0.5">
+                                    <span class="text-[10px] uppercase font-bold text-gray-400">Bedrooms</span>
+                                    <div class="flex items-center gap-1.5 font-bold">
+                                        <span class="material-symbols-outlined text-lg text-primary">bed</span> 2 BHK
+                                    </div>
+                                </div>
+                                <div class="flex flex-col gap-0.5">
+                                    <span class="text-[10px] uppercase font-bold text-gray-400">Total Area</span>
+                                    <div class="flex items-center gap-1.5 font-bold">
+                                        <span class="material-symbols-outlined text-lg text-primary">straighten</span>
+                                        1,800 sq ft
+                                    </div>
+                                </div>
+                                <div class="flex flex-col gap-0.5">
+                                    <span class="text-[10px] uppercase font-bold text-gray-400">Bath</span>
+                                    <div class="flex items-center gap-1.5 font-bold">
+                                        <span class="material-symbols-outlined text-lg text-primary">bathtub</span> 2
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Property Card 4 -->
+                    <div
+                        class="group bg-white dark:bg-white/5 rounded-2xl overflow-hidden border border-[#e2e4e9] dark:border-white/10 hover:shadow-2xl hover:shadow-primary/5 transition-all duration-300">
+                        <div class="relative aspect-[4/3] overflow-hidden">
+                            <div class="absolute inset-0 bg-cover bg-center group-hover:scale-110 transition-transform duration-700"
+                                data-alt="Traditional style family house with large garden"
+                                style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuA_6cdOAJKqPUK9H73AS9G35LBMgka4ovTDLYkpDouKcyIkZAKChQwFPwR9Ik6iqCNC8dtt1cHDoSIxie3-sgHGBd_CPmwcAakO_WQ0N7VyaleKRVAFG-cV6I6YzlOrENhCFu2l2m5ceU2fjAa3WHVR8XqrW_CbCP3i16AHsmafXAaHq5OdnJhOQ13qx9EwAhNpVew0_cWGSW5MoWvLOtO0ejrCqK6WcLp6HeQINyd3DcP37LRjout_C2irZ9w9a-w4AQdau8dcQSw')">
+                            </div>
+                            <button
+                                class="absolute top-4 right-4 size-9 rounded-full bg-white/20 hover:bg-white/40 backdrop-blur-md flex items-center justify-center text-white transition-all">
+                                <span class="material-symbols-outlined text-[20px]">favorite</span>
+                            </button>
+                            <div
+                                class="absolute bottom-4 left-4 bg-primary text-white px-4 py-1.5 rounded-xl font-bold text-lg shadow-xl">
+                                $1,250,000
+                            </div>
+                        </div>
+                        <div class="p-5 space-y-3">
+                            <div>
+                                <h3 class="font-bold text-lg leading-tight group-hover:text-primary transition-colors">
+                                    Oakwood Family Villa</h3>
+                                <div class="flex items-center gap-1 text-gray-500 text-xs mt-1">
+                                    <span class="material-symbols-outlined text-sm">location_on</span>
+                                    Pasadena, CA
+                                </div>
+                            </div>
+                            <div
+                                class="flex items-center justify-between pt-4 border-t border-[#e2e4e9] dark:border-white/10">
+                                <div class="flex flex-col gap-0.5">
+                                    <span class="text-[10px] uppercase font-bold text-gray-400">Bedrooms</span>
+                                    <div class="flex items-center gap-1.5 font-bold">
+                                        <span class="material-symbols-outlined text-lg text-primary">bed</span> 4 BHK
+                                    </div>
+                                </div>
+                                <div class="flex flex-col gap-0.5">
+                                    <span class="text-[10px] uppercase font-bold text-gray-400">Total Area</span>
+                                    <div class="flex items-center gap-1.5 font-bold">
+                                        <span class="material-symbols-outlined text-lg text-primary">straighten</span>
+                                        3,100 sq ft
+                                    </div>
+                                </div>
+                                <div class="flex flex-col gap-0.5">
+                                    <span class="text-[10px] uppercase font-bold text-gray-400">Bath</span>
+                                    <div class="flex items-center gap-1.5 font-bold">
+                                        <span class="material-symbols-outlined text-lg text-primary">bathtub</span> 3
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Property Card 5 -->
+                    <div
+                        class="group bg-white dark:bg-white/5 rounded-2xl overflow-hidden border border-[#e2e4e9] dark:border-white/10 hover:shadow-2xl hover:shadow-primary/5 transition-all duration-300">
+                        <div class="relative aspect-[4/3] overflow-hidden">
+                            <div class="absolute inset-0 bg-cover bg-center group-hover:scale-110 transition-transform duration-700"
+                                data-alt="Modern cottage-style home with lush landscaping"
+                                style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCLCCKo65gNa5DkDW3GwAzRbuhYcM2SZnJHufycBAZribPevgMmM1LmPGWL8xxU5yOvZRvPVYJFh_PBYfNei9xoYSuGrd-nx3gpxpFEY-AtrPNUzs7eRBDjKVE2VdJPGVc2nSWm4BMVX-hZB9LBZYq0lSuPoDnPmy2bjKjoPPueex4lhihFq3RUJRYyWWtcmveu6XJqY8I1iVBZ6eB_UfbrX5usxW3ei7nJYmMa9NI7abtdTNpN_13QPtyb_2jCx2oxiMph1hq3WUI')">
+                            </div>
+                            <button
+                                class="absolute top-4 right-4 size-9 rounded-full bg-white/20 hover:bg-white/40 backdrop-blur-md flex items-center justify-center text-white transition-all">
+                                <span class="material-symbols-outlined text-[20px]">favorite</span>
+                            </button>
+                            <div
+                                class="absolute bottom-4 left-4 bg-primary text-white px-4 py-1.5 rounded-xl font-bold text-lg shadow-xl">
+                                $875,000
+                            </div>
+                        </div>
+                        <div class="p-5 space-y-3">
+                            <div>
+                                <h3 class="font-bold text-lg leading-tight group-hover:text-primary transition-colors">
+                                    The Emerald Cottage</h3>
+                                <div class="flex items-center gap-1 text-gray-500 text-xs mt-1">
+                                    <span class="material-symbols-outlined text-sm">location_on</span>
+                                    Santa Barbara, CA
+                                </div>
+                            </div>
+                            <div
+                                class="flex items-center justify-between pt-4 border-t border-[#e2e4e9] dark:border-white/10">
+                                <div class="flex flex-col gap-0.5">
+                                    <span class="text-[10px] uppercase font-bold text-gray-400">Bedrooms</span>
+                                    <div class="flex items-center gap-1.5 font-bold">
+                                        <span class="material-symbols-outlined text-lg text-primary">bed</span> 3 BHK
+                                    </div>
+                                </div>
+                                <div class="flex flex-col gap-0.5">
+                                    <span class="text-[10px] uppercase font-bold text-gray-400">Total Area</span>
+                                    <div class="flex items-center gap-1.5 font-bold">
+                                        <span class="material-symbols-outlined text-lg text-primary">straighten</span>
+                                        2,200 sq ft
+                                    </div>
+                                </div>
+                                <div class="flex flex-col gap-0.5">
+                                    <span class="text-[10px] uppercase font-bold text-gray-400">Bath</span>
+                                    <div class="flex items-center gap-1.5 font-bold">
+                                        <span class="material-symbols-outlined text-lg text-primary">bathtub</span> 2
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Map/Placeholder Card -->
+                    <div
+                        class="relative bg-primary/5 dark:bg-primary/20 rounded-2xl border-2 border-dashed border-primary/20 flex flex-col items-center justify-center p-8 text-center gap-4 group cursor-pointer hover:border-primary transition-all">
+                        <div
+                            class="size-16 rounded-full bg-primary/10 flex items-center justify-center group-hover:bg-primary/20 transition-colors">
+                            <span class="material-symbols-outlined text-primary text-3xl">map</span>
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-lg">View on Map</h4>
+                            <p class="text-sm text-gray-500 max-w-[180px] mx-auto">Explore all 428 properties in our
+                                interactive map view</p>
+                        </div>
+                        <button
+                            class="px-6 py-2 bg-primary text-white text-xs font-bold rounded-full shadow-lg shadow-primary/20">Open
+                            Map</button>
+                    </div>
+                </div>
+                <!-- Load More -->
+                <div class="mt-16 flex flex-col items-center gap-4">
+                    <p class="text-sm text-gray-500">Showing 6 of 428 properties</p>
+                    <div class="w-64 h-1.5 bg-[#f1f1f4] dark:bg-white/10 rounded-full overflow-hidden">
+                        <div class="h-full bg-primary w-[15%]"></div>
+                    </div>
+                    <button
+                        class="mt-4 px-10 py-3 border-2 border-[#e2e4e9] dark:border-white/10 rounded-xl font-bold hover:bg-white dark:hover:bg-white/5 transition-all active:scale-95">
+                        Load More Results
+                    </button>
+                </div>
+            </section>
+        </main>
+        <!-- Footer -->
+        <footer class="mt-auto border-t border-[#e2e4e9] dark:border-white/10 py-12 bg-white dark:bg-background-dark">
+            <div class="max-w-[1440px] mx-auto px-6 grid grid-cols-1 md:grid-cols-4 gap-12">
+                <div class="space-y-4">
+                    <div class="flex items-center gap-2">
+                        <div class="bg-primary p-1 rounded-lg">
+                            <svg class="size-5 text-white" fill="none" viewbox="0 0 48 48"
+                                xmlns="http://www.w3.org/2000/svg">
+                                <path
+                                    d="M39.5563 34.1455V13.8546C39.5563 15.708 36.8773 17.3437 32.7927 18.3189C30.2914 18.916 27.263 19.2655 24 19.2655C20.737 19.2655 17.7086 18.916 15.2073 18.3189C11.1227 17.3437 8.44365 15.708 8.44365 13.8546V34.1455C8.44365 35.9988 11.1227 37.6346 15.2073 38.6098C17.7086 39.2069 20.737 39.5564 24 39.5564C27.263 39.5564 30.2914 39.2069 32.7927 38.6098C36.8773 37.6346 39.5563 35.9988 39.5563 34.1455Z"
+                                    fill="currentColor"></path>
+                            </svg>
+                        </div>
+                        <h2 class="text-lg font-bold">EstateMarket</h2>
+                    </div>
+                    <p class="text-sm text-gray-500">Connecting visionary buyers with architectural masterpieces across
+                        California.</p>
+                </div>
+                <div>
+                    <h4 class="font-bold mb-4">Quick Links</h4>
+                    <ul class="space-y-2 text-sm text-gray-500">
+                        <li><a class="hover:text-primary transition-colors" href="#">New Listings</a></li>
+                        <li><a class="hover:text-primary transition-colors" href="#">Popular Neighborhoods</a></li>
+                        <li><a class="hover:text-primary transition-colors" href="#">Mortgage Calculator</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="font-bold mb-4">Support</h4>
+                    <ul class="space-y-2 text-sm text-gray-500">
+                        <li><a class="hover:text-primary transition-colors" href="#">Help Center</a></li>
+                        <li><a class="hover:text-primary transition-colors" href="#">Legal Policy</a></li>
+                        <li><a class="hover:text-primary transition-colors" href="#">Privacy</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="font-bold mb-4">Newsletter</h4>
+                    <div class="flex gap-2">
+                        <input class="flex-1 bg-[#f1f1f4] dark:bg-white/5 border-none rounded-lg text-sm"
+                            placeholder="Email" type="email" />
+                        <button class="bg-primary text-white p-2 rounded-lg">
+                            <span class="material-symbols-outlined text-sm">arrow_forward</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div
+                class="max-w-[1440px] mx-auto px-6 mt-12 pt-8 border-t border-[#e2e4e9] dark:border-white/10 text-center text-xs text-gray-400">
+                © 2024 EstateMarket Inc. All rights reserved.
+            </div>
+        </footer>
+    </div>
+
+    <script src="../assets/js/api.js"></script>
+    <script src="../assets/js/utils.js"></script>
+    <script src="../assets/js/auth.js"></script>
+    <script src="../assets/js/services.js"></script>
+    <script src="../assets/js/properties-page.js"></script>
+</body>
+
+</html>

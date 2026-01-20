@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Seller Management Dashboard - EstateSync</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Epilogue:wght@300;400;500;600;700;800;900&amp;display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#252e7e",
+                        "background-light": "#f6f6f8",
+                        "background-dark": "#13151f",
+                    },
+                    fontFamily: {
+                        "display": ["Epilogue", "sans-serif"]
+                    },
+                    borderRadius: { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" },
+                },
+            },
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Epilogue', sans-serif;
+        }
+
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+
+        .sidebar-active {
+            background-color: #f1f1f4;
+            color: #252e7e;
+        }
+    </style>
+</head>
+
+<body class="bg-background-light dark:bg-background-dark min-h-screen">
+    <div class="flex h-full min-h-screen">
+        <!-- Sidebar Navigation -->
+        <aside
+            class="w-64 flex-shrink-0 bg-white dark:bg-zinc-900 border-r border-[#dddee4] dark:border-zinc-800 flex flex-col justify-between p-6 sticky top-0 h-screen">
+            <div class="flex flex-col gap-8">
+                <div class="flex items-center gap-3">
+                    <div class="bg-primary size-10 rounded-lg flex items-center justify-center text-white">
+                        <span class="material-symbols-outlined">apartment</span>
+                    </div>
+                    <div>
+                        <h1 class="text-[#121317] dark:text-white text-base font-bold leading-tight">EstateSync</h1>
+                        <p class="text-[#686b82] text-xs font-normal">Pro Seller Portal</p>
+                    </div>
+                </div>
+                <nav class="flex flex-col gap-2">
+                    <a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-[#686b82] hover:bg-background-light dark:hover:bg-zinc-800 transition-colors"
+                        href="#">
+                        <span class="material-symbols-outlined">dashboard</span>
+                        <span class="text-sm font-medium">Dashboard</span>
+                    </a>
+                    <a class="flex items-center gap-3 px-3 py-2.5 rounded-lg sidebar-active" href="#">
+                        <span class="material-symbols-outlined">list_alt</span>
+                        <span class="text-sm font-medium">My Listings</span>
+                    </a>
+                    <a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-[#686b82] hover:bg-background-light dark:hover:bg-zinc-800 transition-colors"
+                        href="#">
+                        <span class="material-symbols-outlined">group</span>
+                        <span class="text-sm font-medium">Leads</span>
+                        <span
+                            class="ml-auto bg-primary text-white text-[10px] px-1.5 py-0.5 rounded-full font-bold">12</span>
+                    </a>
+                    <a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-[#686b82] hover:bg-background-light dark:hover:bg-zinc-800 transition-colors"
+                        href="#">
+                        <span class="material-symbols-outlined">bar_chart</span>
+                        <span class="text-sm font-medium">Analytics</span>
+                    </a>
+                    <a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-[#686b82] hover:bg-background-light dark:hover:bg-zinc-800 transition-colors"
+                        href="#">
+                        <span class="material-symbols-outlined">settings</span>
+                        <span class="text-sm font-medium">Settings</span>
+                    </a>
+                </nav>
+            </div>
+            <div class="flex flex-col gap-4">
+                <div class="bg-background-light dark:bg-zinc-800 p-4 rounded-xl">
+                    <p class="text-[#121317] dark:text-white text-xs font-bold mb-1">Upgrade to Premium</p>
+                    <p class="text-[#686b82] text-[10px] leading-tight mb-3">Get 2x more leads and priority property
+                        placement.</p>
+                    <button
+                        class="w-full bg-primary text-white text-xs font-bold py-2 rounded-lg hover:opacity-90 transition-opacity">
+                        Upgrade Now
+                    </button>
+                </div>
+            </div>
+        </aside>
+        <!-- Main Content Area -->
+        <main class="flex-1 flex flex-col overflow-y-auto">
+            <!-- Top Navigation -->
+            <header
+                class="h-16 border-b border-[#dddee4] dark:border-zinc-800 bg-white dark:bg-zinc-900 px-8 flex items-center justify-between sticky top-0 z-10">
+                <div class="flex items-center gap-4">
+                    <div class="flex items-center gap-2 text-[#686b82] text-sm font-medium">
+                        <a class="hover:text-primary transition-colors" href="#">Dashboard</a>
+                        <span>/</span>
+                        <span class="text-[#121317] dark:text-white">My Listings</span>
+                    </div>
+                </div>
+                <div class="flex items-center gap-6">
+                    <label class="relative flex items-center">
+                        <span class="material-symbols-outlined absolute left-3 text-[#686b82] text-xl">search</span>
+                        <input
+                            class="bg-background-light dark:bg-zinc-800 border-none rounded-lg pl-10 pr-4 py-2 text-sm focus:ring-2 focus:ring-primary w-64 text-[#121317] dark:text-white"
+                            placeholder="Search properties..." type="text" />
+                    </label>
+                    <div class="flex gap-4 items-center">
+                        <div data-auth="user-profile" style="display: none;" class="relative flex items-center gap-2">
+                            <span data-user="name" class="text-sm font-semibold"></span>
+                        </div>
+                        <button class="text-[#686b82] hover:text-primary transition-colors relative">
+                            <span class="material-symbols-outlined">notifications</span>
+                            <span
+                                class="absolute top-0 right-0 size-2 bg-red-500 rounded-full border border-white"></span>
+                        </button>
+                        <button class="text-[#686b82] hover:text-primary transition-colors">
+                            <span class="material-symbols-outlined">mail</span>
+                        </button>
+                    </div>
+                </div>
+            </header>
+            <!-- Dashboard Content -->
+            <div class="p-8 max-w-7xl mx-auto w-full">
+                <!-- Page Heading & CTA -->
+                <div class="flex flex-wrap justify-between items-end gap-4 mb-8">
+                    <div class="flex flex-col gap-1">
+                        <h2 class="text-[#121317] dark:text-white text-3xl font-black tracking-tight">Property Overview
+                        </h2>
+                        <p class="text-[#686b82] text-base">Manage your active real estate portfolio and monitor lead
+                            generation performance.</p>
+                    </div>
+                    <button
+                        class="bg-primary text-white px-6 py-3 rounded-xl font-bold text-sm flex items-center gap-2 hover:shadow-lg transition-all active:scale-95"
+                        onclick="showAddPropertyModal()">
+                        <span class="material-symbols-outlined">add_circle</span>
+                        Add New Property
+                    </button>
+                </div>
+                <!-- Stats Bento Grid -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                    <div
+                        class="bg-white dark:bg-zinc-900 border border-[#dddee4] dark:border-zinc-800 p-6 rounded-xl flex flex-col justify-between gap-4">
+                        <div class="flex justify-between items-start">
+                            <div
+                                class="size-10 bg-blue-50 dark:bg-blue-900/20 text-blue-600 rounded-lg flex items-center justify-center">
+                                <span class="material-symbols-outlined">visibility</span>
+                            </div>
+                            <span
+                                class="text-[#07883f] bg-green-50 dark:bg-green-900/20 px-2 py-1 rounded text-xs font-bold">+12.5%</span>
+                        </div>
+                        <div>
+                            <p class="text-[#686b82] text-sm font-medium">Total Page Views</p>
+                            <p class="text-[#121317] dark:text-white text-2xl font-black">12,482</p>
+                        </div>
+                    </div>
+                    <div
+                        class="bg-white dark:bg-zinc-900 border border-[#dddee4] dark:border-zinc-800 p-6 rounded-xl flex flex-col justify-between gap-4">
+                        <div class="flex justify-between items-start">
+                            <div
+                                class="size-10 bg-purple-50 dark:bg-purple-900/20 text-purple-600 rounded-lg flex items-center justify-center">
+                                <span class="material-symbols-outlined">contact_support</span>
+                            </div>
+                            <span
+                                class="text-[#07883f] bg-green-50 dark:bg-green-900/20 px-2 py-1 rounded text-xs font-bold">+5
+                                new</span>
+                        </div>
+                        <div>
+                            <p class="text-[#686b82] text-sm font-medium">New Lead Inquiries</p>
+                            <p class="text-[#121317] dark:text-white text-2xl font-black">48</p>
+                        </div>
+                    </div>
+                    <div
+                        class="bg-white dark:bg-zinc-900 border border-[#dddee4] dark:border-zinc-800 p-6 rounded-xl flex flex-col justify-between gap-4">
+                        <div class="flex justify-between items-start">
+                            <div
+                                class="size-10 bg-amber-50 dark:bg-amber-900/20 text-amber-600 rounded-lg flex items-center justify-center">
+                                <span class="material-symbols-outlined">campaign</span>
+                            </div>
+                            <span
+                                class="text-[#686b82] bg-background-light dark:bg-zinc-800 px-2 py-1 rounded text-xs font-bold">Stable</span>
+                        </div>
+                        <div>
+                            <p class="text-[#686b82] text-sm font-medium">Active Ad Campaigns</p>
+                            <p class="text-[#121317] dark:text-white text-2xl font-black">08</p>
+                        </div>
+                    </div>
+                </div>
+                <!-- Listings Table -->
+                <div
+                    class="bg-white dark:bg-zinc-900 border border-[#dddee4] dark:border-zinc-800 rounded-xl overflow-hidden shadow-sm">
+                    <div
+                        class="px-6 py-4 border-b border-[#dddee4] dark:border-zinc-800 flex items-center justify-between bg-white dark:bg-zinc-900">
+                        <h3 class="text-[#121317] dark:text-white font-bold">Active Listings</h3>
+                        <div class="flex gap-2">
+                            <button
+                                class="p-2 hover:bg-background-light dark:hover:bg-zinc-800 rounded-lg transition-colors border border-[#dddee4] dark:border-zinc-800">
+                                <span class="material-symbols-outlined text-lg text-[#686b82]">filter_list</span>
+                            </button>
+                            <button
+                                class="p-2 hover:bg-background-light dark:hover:bg-zinc-800 rounded-lg transition-colors border border-[#dddee4] dark:border-zinc-800">
+                                <span class="material-symbols-outlined text-lg text-[#686b82]">download</span>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse">
+                            <thead>
+                                <tr class="bg-background-light/50 dark:bg-zinc-800/50">
+                                    <th class="px-6 py-4 text-xs font-bold text-[#686b82] uppercase tracking-wider">
+                                        Property Details</th>
+                                    <th
+                                        class="px-6 py-4 text-xs font-bold text-[#686b82] uppercase tracking-wider text-center">
+                                        Price</th>
+                                    <th
+                                        class="px-6 py-4 text-xs font-bold text-[#686b82] uppercase tracking-wider text-center">
+                                        Status</th>
+                                    <th
+                                        class="px-6 py-4 text-xs font-bold text-[#686b82] uppercase tracking-wider text-center">
+                                        Views</th>
+                                    <th
+                                        class="px-6 py-4 text-xs font-bold text-[#686b82] uppercase tracking-wider text-center">
+                                        Leads</th>
+                                    <th
+                                        class="px-6 py-4 text-xs font-bold text-[#686b82] uppercase tracking-wider text-right">
+                                        Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-[#dddee4] dark:divide-zinc-800">
+                                <!-- Table Row 1 -->
+                                <tr
+                                    class="hover:bg-background-light/30 dark:hover:bg-zinc-800/30 transition-colors group">
+                                    <td class="px-6 py-5">
+                                        <div class="flex items-center gap-4">
+                                            <div class="size-14 rounded-lg bg-cover bg-center shrink-0 border border-[#dddee4] dark:border-zinc-800"
+                                                data-alt="Modern glass villa exterior"
+                                                style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuBHkrtyJqs6O305mh2kA4fdXIDdqLqqUkarFPni7KXZZb1157Bsi7tVc_BaM2clie6vahGUoWJolK6pxAHB-b94WxcyJaod9GbvpfjFeiLCSlJFq-XUhkYWEdMUZCTHiPDlb-oI9Z04OD94Pd7-Lbmgl1yiLnyT94YXFagXNUmccFE6Wtg2CUVecMkF1V7zoEfYxYsMXDqWfhoFy3Aoe41igYCv1lD5aAr8INF_7tqUu2ZTYw-p4QmDCYUMCZwnGsBM1iuCm-IY68g');">
+                                            </div>
+                                            <div class="flex flex-col">
+                                                <span class="text-[#121317] dark:text-white font-bold text-sm">Skyline
+                                                    Penthouse</span>
+                                                <span class="text-[#686b82] text-xs">450 Park Ave, New York</span>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-5 text-center">
+                                        <span class="text-[#121317] dark:text-white font-bold text-sm">$4,250,000</span>
+                                    </td>
+                                    <td class="px-6 py-5 text-center">
+                                        <span
+                                            class="bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wide">Active</span>
+                                    </td>
+                                    <td class="px-6 py-5 text-center">
+                                        <span class="text-[#121317] dark:text-white text-sm">2,481</span>
+                                    </td>
+                                    <td class="px-6 py-5 text-center">
+                                        <span class="text-[#121317] dark:text-white text-sm font-bold">12</span>
+                                    </td>
+                                    <td class="px-6 py-5 text-right">
+                                        <div class="flex items-center justify-end gap-2">
+                                            <button
+                                                class="p-2 hover:bg-white dark:hover:bg-zinc-700 rounded-lg text-[#686b82] hover:text-primary shadow-sm transition-all">
+                                                <span class="material-symbols-outlined text-lg">edit</span>
+                                            </button>
+                                            <button
+                                                class="p-2 hover:bg-white dark:hover:bg-zinc-700 rounded-lg text-[#686b82] hover:text-primary shadow-sm transition-all">
+                                                <span class="material-symbols-outlined text-lg">more_vert</span>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <!-- Table Row 2 -->
+                                <tr
+                                    class="hover:bg-background-light/30 dark:hover:bg-zinc-800/30 transition-colors group">
+                                    <td class="px-6 py-5">
+                                        <div class="flex items-center gap-4">
+                                            <div class="size-14 rounded-lg bg-cover bg-center shrink-0 border border-[#dddee4] dark:border-zinc-800"
+                                                data-alt="Cozy suburban house with garden"
+                                                style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCAO-YQXLUmMj9D-ksN5XXFQRo1gzhHXHHytpbs9PJ_SswvlNeBfkUmP5391deDEk5gvubwHOMYdu5BEgDNbsjV8dXiiDMTcC4q-Wb6RhDcHeDhhigVw6qvhzeVIwFYoXBqKAacGb7iHtsrCNNbHsQBh1AbMuwIWZtSz6vPRG-rvWJmjxnr2lr9OSqOO1dJmJyiG0Ni68Jv403M0YWwnrI1NIa6qxPePWTRjz6T4KXzgoQfdirAylBFtrt-tyihLw3qdJD1jIwr7vw');">
+                                            </div>
+                                            <div class="flex flex-col">
+                                                <span class="text-[#121317] dark:text-white font-bold text-sm">Willow
+                                                    Creek Estate</span>
+                                                <span class="text-[#686b82] text-xs">12 Oak Lane, Greenwich</span>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-5 text-center">
+                                        <span class="text-[#121317] dark:text-white font-bold text-sm">$1,890,000</span>
+                                    </td>
+                                    <td class="px-6 py-5 text-center">
+                                        <span
+                                            class="bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wide">Pending</span>
+                                    </td>
+                                    <td class="px-6 py-5 text-center">
+                                        <span class="text-[#121317] dark:text-white text-sm">1,102</span>
+                                    </td>
+                                    <td class="px-6 py-5 text-center">
+                                        <span class="text-[#121317] dark:text-white text-sm font-bold">34</span>
+                                    </td>
+                                    <td class="px-6 py-5 text-right">
+                                        <div class="flex items-center justify-end gap-2">
+                                            <button
+                                                class="p-2 hover:bg-white dark:hover:bg-zinc-700 rounded-lg text-[#686b82] hover:text-primary shadow-sm transition-all">
+                                                <span class="material-symbols-outlined text-lg">edit</span>
+                                            </button>
+                                            <button
+                                                class="p-2 hover:bg-white dark:hover:bg-zinc-700 rounded-lg text-[#686b82] hover:text-primary shadow-sm transition-all">
+                                                <span class="material-symbols-outlined text-lg">more_vert</span>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <!-- Table Row 3 -->
+                                <tr
+                                    class="hover:bg-background-light/30 dark:hover:bg-zinc-800/30 transition-colors group">
+                                    <td class="px-6 py-5">
+                                        <div class="flex items-center gap-4">
+                                            <div class="size-14 rounded-lg bg-cover bg-center shrink-0 border border-[#dddee4] dark:border-zinc-800"
+                                                data-alt="Luxury beachfront villa sunset view"
+                                                style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDUk6N9OS4Xj7jaVzFsIboVwcac0uVRFYMUpknKE4BzVVRWf-u_FDe90sEo5G7Vl7p4aTSKB-jPH9reS9HyQ3hutXP1P_6O1WGFzP1SDkBTqaHSaizUpDB6Ntuf0QYvNQ371sA055xuJf4WkxJ7B3QxEGlnaxowEmNEtset4ZqjeE-y9L_eYGa_GkgD2YTH0Xj1zBjVU1saxUB-Smv8rpQ829v5wmrbWLyHxD2gId-DvXXWpByqnHsT-O8ZhKulo6JSI8aK3l9_RyM');">
+                                            </div>
+                                            <div class="flex flex-col">
+                                                <span class="text-[#121317] dark:text-white font-bold text-sm">Azure Bay
+                                                    Residence</span>
+                                                <span class="text-[#686b82] text-xs">Coastal Way, Malibu</span>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-5 text-center">
+                                        <span class="text-[#121317] dark:text-white font-bold text-sm">$8,400,000</span>
+                                    </td>
+                                    <td class="px-6 py-5 text-center">
+                                        <span
+                                            class="bg-gray-100 text-gray-700 dark:bg-zinc-800 dark:text-zinc-400 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wide">Sold</span>
+                                    </td>
+                                    <td class="px-6 py-5 text-center">
+                                        <span class="text-[#121317] dark:text-white text-sm">8,920</span>
+                                    </td>
+                                    <td class="px-6 py-5 text-center">
+                                        <span class="text-[#121317] dark:text-white text-sm font-bold">156</span>
+                                    </td>
+                                    <td class="px-6 py-5 text-right">
+                                        <div class="flex items-center justify-end gap-2">
+                                            <button
+                                                class="p-2 hover:bg-white dark:hover:bg-zinc-700 rounded-lg text-[#686b82] hover:text-primary shadow-sm transition-all">
+                                                <span class="material-symbols-outlined text-lg">edit</span>
+                                            </button>
+                                            <button
+                                                class="p-2 hover:bg-white dark:hover:bg-zinc-700 rounded-lg text-[#686b82] hover:text-primary shadow-sm transition-all">
+                                                <span class="material-symbols-outlined text-lg">more_vert</span>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div
+                        class="px-6 py-4 bg-background-light/20 dark:bg-zinc-900 border-t border-[#dddee4] dark:border-zinc-800 flex items-center justify-between">
+                        <span class="text-[#686b82] text-xs">Showing 3 of 12 active properties</span>
+                        <div class="flex gap-2">
+                            <button
+                                class="px-3 py-1 rounded border border-[#dddee4] dark:border-zinc-800 text-xs font-bold text-[#686b82] disabled:opacity-50">Previous</button>
+                            <button class="px-3 py-1 rounded bg-primary text-white text-xs font-bold">Next</button>
+                        </div>
+                    </div>
+                </div>
+                <!-- Secondary Info Section -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mt-12 mb-20">
+                    <div class="bg-white dark:bg-zinc-900 p-8 rounded-xl border border-[#dddee4] dark:border-zinc-800">
+                        <h4 class="text-[#121317] dark:text-white text-lg font-bold mb-4">Market Trends</h4>
+                        <div class="h-48 flex items-end gap-3 px-4">
+                            <!-- Simple custom bars for trend viz -->
+                            <div class="flex-1 bg-primary/20 rounded-t-lg h-[40%]"></div>
+                            <div class="flex-1 bg-primary/30 rounded-t-lg h-[65%]"></div>
+                            <div class="flex-1 bg-primary/40 rounded-t-lg h-[50%]"></div>
+                            <div class="flex-1 bg-primary/60 rounded-t-lg h-[85%]"></div>
+                            <div class="flex-1 bg-primary/80 rounded-t-lg h-[70%]"></div>
+                            <div class="flex-1 bg-primary rounded-t-lg h-[100%]"></div>
+                        </div>
+                        <div class="mt-4 flex justify-between text-[#686b82] text-[10px] font-bold uppercase">
+                            <span>Jan</span><span>Feb</span><span>Mar</span><span>Apr</span><span>May</span><span>Jun</span>
+                        </div>
+                    </div>
+                    <div
+                        class="bg-primary text-white p-8 rounded-xl relative overflow-hidden flex flex-col justify-between">
+                        <div class="z-10">
+                            <h4 class="text-xl font-black mb-2 leading-tight">Need help with your listings?</h4>
+                            <p class="text-white/80 text-sm mb-6 max-w-[280px]">Schedule a free consultation with our
+                                professional photography and staging partners.</p>
+                            <button
+                                class="bg-white text-primary px-5 py-2.5 rounded-lg font-bold text-sm hover:shadow-xl transition-all">Book
+                                Consultation</button>
+                        </div>
+                        <span
+                            class="material-symbols-outlined absolute -bottom-8 -right-8 text-white/10 text-[180px] select-none">support_agent</span>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+    <script src="../assets/js/api.js"></script>
+    <script src="../assets/js/utils.js"></script>
+    <script src="../assets/js/auth.js"></script>
+    <script src="../assets/js/services.js"></script>
+    <script src="../assets/js/seller-dashboard.js"></script>
+</body>
+
+</html>

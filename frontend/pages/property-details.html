@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+  <title>Property Details | EstateMarket</title>
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Epilogue:wght@400;500;700;800&amp;family=Noto+Sans:wght@400;500;700&amp;display=swap"
+    rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100..700,0..1&amp;display=swap"
+    rel="stylesheet" />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+    rel="stylesheet" />
+  <script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "primary": "#252e7e",
+            "background-light": "#f6f6f8",
+            "background-dark": "#13151f",
+          },
+          fontFamily: {
+            "display": ["Epilogue", "sans-serif"],
+            "sans": ["Noto Sans", "sans-serif"]
+          },
+          borderRadius: { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" },
+        },
+      },
+    }
+  </script>
+  <style>
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
+    }
+
+    .hide-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+
+    .hide-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+  </style>
+</head>
+
+<body
+  class="bg-background-light dark:bg-background-dark font-display text-[#121317] dark:text-white transition-colors duration-300">
+  <!-- Top Navigation Bar -->
+  <header
+    class="sticky top-0 z-50 w-full bg-white/80 dark:bg-background-dark/80 backdrop-blur-md border-b border-[#f1f1f4] dark:border-white/10">
+    <div class="max-w-[1280px] mx-auto flex items-center justify-between px-6 py-4">
+      <div class="flex items-center gap-10">
+        <div class="flex items-center gap-2 text-primary dark:text-white">
+          <span class="material-symbols-outlined text-3xl font-bold">domain</span>
+          <h2 class="text-xl font-extrabold tracking-tight">EstateMarket</h2>
+        </div>
+        <nav class="hidden md:flex items-center gap-6">
+          <a class="text-sm font-semibold hover:text-primary transition-colors" href="#">Buy</a>
+          <a class="text-sm font-semibold hover:text-primary transition-colors" href="#">Sell</a>
+          <a class="text-sm font-semibold hover:text-primary transition-colors" href="#">Rent</a>
+          <a class="text-sm font-semibold hover:text-primary transition-colors" href="#">Mortgage</a>
+        </nav>
+      </div>
+      <div class="flex items-center gap-4">
+        <label
+          class="hidden lg:flex items-center bg-[#f1f1f4] dark:bg-white/5 rounded-lg px-3 py-2 w-64 border border-transparent focus-within:border-primary/30 transition-all">
+          <span class="material-symbols-outlined text-[#686b82] text-xl">search</span>
+          <input class="bg-transparent border-none focus:ring-0 text-sm w-full placeholder:text-[#686b82]"
+            placeholder="Search city, zip, agent..." />
+        </label>
+        <button
+          class="bg-primary text-white text-sm font-bold px-5 py-2.5 rounded-lg hover:opacity-90 transition-opacity">
+          List Property
+        </button>
+        <div data-auth="user-profile" style="display: none;" class="relative flex items-center gap-2">
+          <span data-user="name" class="text-sm font-semibold"></span>
+        </div>
+      </div>
+    </div>
+  </header>
+  <main class="max-w-[1280px] mx-auto px-6 py-6">
+    <!-- Breadcrumbs -->
+    <nav class="flex items-center gap-2 mb-6 overflow-x-auto hide-scrollbar text-sm whitespace-nowrap">
+      <a class="text-[#686b82] hover:text-primary transition-colors" href="#">Real Estate</a>
+      <span class="text-[#686b82]/40">/</span>
+      <a class="text-[#686b82] hover:text-primary transition-colors" href="#">California</a>
+      <span class="text-[#686b82]/40">/</span>
+      <a class="text-[#686b82] hover:text-primary transition-colors" href="#">Los Angeles</a>
+      <span class="text-[#686b82]/40">/</span>
+      <span class="font-semibold text-primary dark:text-white">Hollywood Hills Villa</span>
+    </nav>
+    <!-- Hero Gallery Section -->
+    <section
+      class="grid grid-cols-1 md:grid-cols-4 grid-rows-2 gap-3 h-[400px] md:h-[600px] mb-10 overflow-hidden rounded-xl shadow-xl">
+      <div class="md:col-span-2 md:row-span-2 relative group cursor-pointer overflow-hidden">
+        <div class="absolute inset-0 bg-black/10 group-hover:bg-black/0 transition-all duration-500"></div>
+        <div class="w-full h-full bg-center bg-cover transition-transform duration-700 group-hover:scale-105"
+          data-alt="Main wide exterior shot of modern white villa with pool"
+          style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBCAyt2u08KEgMblVQ4jcsKXOgM2UxIDLdGM7lpYyJzgfp3aySgD2Y1G7oHNK01lfd_d1dxSwyAmSC4WB7Hvy7pv25mMwI342UtsICF60sQwQMfVnNPV67E_L_fAuir3817DA4j0NfWGS4KRi8fSWhEMFFYPscBSahPFvctipX0UDRgD_QppKtd1zlU8sjMCed0e72dfdscneZ6QYBLfWaY1kEBX8KW7wM8PLiZDwqDpd7z9CSQAUHPpcIVl5q7YKAOtZw0DBienDo");'>
+        </div>
+        <div
+          class="absolute bottom-4 left-4 bg-white/90 dark:bg-background-dark/90 backdrop-blur px-3 py-1 rounded text-xs font-bold uppercase tracking-wider">
+          Featured Exterior</div>
+      </div>
+      <div class="hidden md:block relative group cursor-pointer overflow-hidden">
+        <div class="w-full h-full bg-center bg-cover transition-transform duration-700 group-hover:scale-105"
+          data-alt="Modern minimalist living room with floor to ceiling windows"
+          style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuAR_vX8Shj9MzZKvj76BCR5TItLpZraR1pJg1Tz2CEh7SbYMtuOQ1DMEsckc0zJjpxAAbwOL2ZBZf_hsxkZUWSeUp_tfhZ2hVkQNP37wOlXjy3h__8uKoax7PBYY8oqX_gNMmFQp5i8bXM7lRlF42E43tKeRfI8r2YEkA53kzQyrSvrS37zp3B4_UxPdm9pEvK4I3n-5X_9HMWSCuq94vNK8hLU3De8PZ6H3x9aA99ABp57cUGId-ia2Qhks1zmlhxUF-dSl-fCe8I");'>
+        </div>
+      </div>
+      <div class="hidden md:block relative group cursor-pointer overflow-hidden">
+        <div class="w-full h-full bg-center bg-cover transition-transform duration-700 group-hover:scale-105"
+          data-alt="Gourmet kitchen with marble islands and professional appliances"
+          style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCMMOGVV8keTT6fJQEAhdyt1lHlZzMwJ3rlXWjf8QvTD9woGZ48M0uofBkl_hhkF6q2tlzHzrLHiMxsnqSlZd_sPrBZHD1ed8mmYR9_JHpxoIXWSg5b7WalIi7G5LWE5itxKwJto3Zky5SvV51F98pzLFB_bukbVppckEm8cSgcJnuRgdidbRzjrYqn3ELcehPK6kBNMsQZlpA-TPPoV3_99Gnr0QdnsgtmNRnkGxtmHhYnG3dEnsqH9IvZwZMsaA-v5GPuX4ZeC-I");'>
+        </div>
+      </div>
+      <div class="hidden md:block relative group cursor-pointer overflow-hidden">
+        <div class="w-full h-full bg-center bg-cover transition-transform duration-700 group-hover:scale-105"
+          data-alt="Luxury master suite with private balcony view"
+          style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDpkBW2gexiB0V2XuG6-V57a2wDCrqluIk5PCRvOM6Z06kjkDfAnbYsfVRcJ2Q3i9gAcBXPqLP-gZG2ywXhMm5TMZWsm2dqvHBoLvG5lI08y4axq9s3YxhkvdQn_gysMnD4oayf-e3sOIRbRbGQqCn0i4FiOZC61ydIuShaO0WH6y0xtCRbS-3ifdDBy57AMB0dV6vwc1UgKAJcwCBl78EIIlHM8d9qv0EG9HSew-f5lL4Z8UuPxgH-Hf8i8aKSxIw52ga1og8uD8E");'>
+        </div>
+      </div>
+      <div class="hidden md:block relative group cursor-pointer overflow-hidden">
+        <div class="w-full h-full bg-center bg-cover transition-transform duration-700 group-hover:scale-105"
+          data-alt="Infinity pool overlooking the Los Angeles skyline"
+          style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuC7psnHaL6Z1qdflnfi51NI2JU1lS686_5ssdGMzNovcIk0voUWXb4RZqwtaE_taWa-0TVQKwTearA1EC85-y4SpnDPAYWvV81hYJqes2qngOHOQ6-illENMRpE6NOrqyXjl3BtUIY9R1yHkZoCpu6--T4IVP_7OUiGvu8_l-AdcSf_N1gYnH86sbwDvCz4f39AW_rp5E-_4mUYIjG46SqdW1r9KYIerqJHWQtMBrQcDuzWU45zwWbvT-OtQf4cVLEk7PD47O7WfE0");'>
+        </div>
+        <button
+          class="absolute inset-0 flex flex-col items-center justify-center bg-black/40 text-white backdrop-blur-[2px] opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+          <span class="material-symbols-outlined text-4xl mb-1">grid_view</span>
+          <span class="font-bold text-sm">View 48 Photos</span>
+        </button>
+      </div>
+    </section>
+    <div class="flex flex-col lg:flex-row gap-12">
+      <!-- Left Column: Details -->
+      <div class="flex-1 space-y-10">
+        <div class="space-y-4">
+          <div class="flex flex-wrap gap-2">
+            <span
+              class="flex items-center gap-1.5 px-3 py-1 bg-primary/10 text-primary dark:bg-primary/20 dark:text-primary/20 rounded-full text-xs font-bold uppercase tracking-wider">
+              <span class="material-symbols-outlined text-sm">star</span> New Listing
+            </span>
+            <span
+              class="flex items-center gap-1.5 px-3 py-1 bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400 rounded-full text-xs font-bold uppercase tracking-wider">
+              <span class="material-symbols-outlined text-sm">verified</span> Verified
+            </span>
+          </div>
+          <h1 class="text-4xl md:text-5xl font-extrabold tracking-tight text-[#121317] dark:text-white">
+            Modern Minimalist Villa in Hollywood Hills
+          </h1>
+          <p class="flex items-center gap-2 text-[#686b82] text-lg">
+            <span class="material-symbols-outlined">location_on</span>
+            8240 Sunset Plaza Dr, Los Angeles, CA 90069
+          </p>
+        </div>
+        <!-- Specs Grid -->
+        <div
+          class="grid grid-cols-2 md:grid-cols-4 gap-4 p-6 bg-white dark:bg-white/5 rounded-2xl border border-[#f1f1f4] dark:border-white/10 shadow-sm">
+          <div class="flex flex-col gap-1">
+            <span class="text-[#686b82] text-xs font-bold uppercase tracking-widest">Bedrooms</span>
+            <div class="flex items-center gap-2">
+              <span class="material-symbols-outlined text-primary">bed</span>
+              <span class="text-xl font-bold">4 Beds</span>
+            </div>
+          </div>
+          <div class="flex flex-col gap-1">
+            <span class="text-[#686b82] text-xs font-bold uppercase tracking-widest">Bathrooms</span>
+            <div class="flex items-center gap-2">
+              <span class="material-symbols-outlined text-primary">bathtub</span>
+              <span class="text-xl font-bold">3.5 Baths</span>
+            </div>
+          </div>
+          <div class="flex flex-col gap-1">
+            <span class="text-[#686b82] text-xs font-bold uppercase tracking-widest">Living Space</span>
+            <div class="flex items-center gap-2">
+              <span class="material-symbols-outlined text-primary">square_foot</span>
+              <span class="text-xl font-bold">2,500 <span class="text-sm font-normal">sqft</span></span>
+            </div>
+          </div>
+          <div class="flex flex-col gap-1">
+            <span class="text-[#686b82] text-xs font-bold uppercase tracking-widest">Year Built</span>
+            <div class="flex items-center gap-2">
+              <span class="material-symbols-outlined text-primary">calendar_today</span>
+              <span class="text-xl font-bold">2023</span>
+            </div>
+          </div>
+        </div>
+        <!-- Description Text -->
+        <div class="space-y-4">
+          <h3 class="text-2xl font-bold">Property Description</h3>
+          <div class="text-[#686b82] dark:text-white/70 leading-relaxed space-y-4 max-w-prose text-lg">
+            <p>Experience the pinnacle of Hollywood Hills living in this newly constructed minimalist masterpiece.
+              Designed by renowned architectural firm Studio Apex, this residence perfectly blends brutalist elements
+              with warm Scandinavian interior design.</p>
+            <p>The open-concept main floor features soaring 12-foot ceilings and floor-to-ceiling glass walls that
+              disappear into the structure, creating a seamless indoor-outdoor flow. The professional chef's kitchen is
+              equipped with custom white oak cabinetry and Gaggenau appliances.</p>
+            <p>Outside, the sprawling terrace hosts an infinity-edge salt water pool, outdoor kitchen, and fire pit
+              area—all overlooking the iconic Los Angeles skyline from downtown to the Pacific Ocean.</p>
+          </div>
+          <button class="text-primary font-bold hover:underline flex items-center gap-1">
+            Read more <span class="material-symbols-outlined text-sm">keyboard_arrow_down</span>
+          </button>
+        </div>
+        <!-- Amenities Bento -->
+        <div class="space-y-6">
+          <h3 class="text-2xl font-bold">Premium Amenities</h3>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div
+              class="p-5 bg-white dark:bg-white/5 border border-[#f1f1f4] dark:border-white/10 rounded-xl flex items-start gap-4 transition-transform hover:-translate-y-1">
+              <div class="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center text-primary">
+                <span class="material-symbols-outlined">ac_unit</span>
+              </div>
+              <div>
+                <p class="font-bold">Central HVAC</p>
+                <p class="text-sm text-[#686b82]">Smart thermostat control</p>
+              </div>
+            </div>
+            <div
+              class="p-5 bg-white dark:bg-white/5 border border-[#f1f1f4] dark:border-white/10 rounded-xl flex items-start gap-4 transition-transform hover:-translate-y-1">
+              <div class="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center text-primary">
+                <span class="material-symbols-outlined">pool</span>
+              </div>
+              <div>
+                <p class="font-bold">Infinity Pool</p>
+                <p class="text-sm text-[#686b82]">Heated salt water</p>
+              </div>
+            </div>
+            <div
+              class="p-5 bg-white dark:bg-white/5 border border-[#f1f1f4] dark:border-white/10 rounded-xl flex items-start gap-4 transition-transform hover:-translate-y-1">
+              <div class="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center text-primary">
+                <span class="material-symbols-outlined">garage</span>
+              </div>
+              <div>
+                <p class="font-bold">3-Car Garage</p>
+                <p class="text-sm text-[#686b82]">EV charging station</p>
+              </div>
+            </div>
+            <div
+              class="p-5 bg-white dark:bg-white/5 border border-[#f1f1f4] dark:border-white/10 rounded-xl flex items-start gap-4 transition-transform hover:-translate-y-1">
+              <div class="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center text-primary">
+                <span class="material-symbols-outlined">home_iot_device</span>
+              </div>
+              <div>
+                <p class="font-bold">Automation</p>
+                <p class="text-sm text-[#686b82]">Full home automation</p>
+              </div>
+            </div>
+            <div
+              class="p-5 bg-white dark:bg-white/5 border border-[#f1f1f4] dark:border-white/10 rounded-xl flex items-start gap-4 transition-transform hover:-translate-y-1">
+              <div class="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center text-primary">
+                <span class="material-symbols-outlined">wine_bar</span>
+              </div>
+              <div>
+                <p class="font-bold">Wine Cellar</p>
+                <p class="text-sm text-[#686b82]">Temperature controlled</p>
+              </div>
+            </div>
+            <div
+              class="p-5 bg-white dark:bg-white/5 border border-[#f1f1f4] dark:border-white/10 rounded-xl flex items-start gap-4 transition-transform hover:-translate-y-1">
+              <div class="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center text-primary">
+                <span class="material-symbols-outlined">security</span>
+              </div>
+              <div>
+                <p class="font-bold">Security</p>
+                <p class="text-sm text-[#686b82]">24/7 Gated community</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- Location Map -->
+        <div class="space-y-6 pb-12">
+          <div class="flex items-center justify-between">
+            <h3 class="text-2xl font-bold">Neighborhood</h3>
+            <a class="text-primary font-bold text-sm underline" href="#">View area guide</a>
+          </div>
+          <div
+            class="relative w-full h-[350px] rounded-2xl overflow-hidden shadow-inner border border-[#f1f1f4] dark:border-white/10">
+            <div class="absolute inset-0 bg-cover bg-center grayscale contrast-125 opacity-80"
+              data-location="Hollywood Hills, Los Angeles"
+              style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuACQVIea-vNHDXkjjGgz5oEIw9dnUc7DrZ9urp8t-vzrdXsidmJsae5RP_rUDdvgSPRtGBxj8MduEyTsB_2ZgFebMDvkU4-Ly9lNlyMLgYftK8rU_jNil1pr7ExdDqidzQbEIYJs67aTXW7Sg4pD5-a1hxh8bU0u2dvrS0k9sf5uasoq24OPq6IiP3Ycsu_pafBdpB3AjMNP1Lo7yw8NpGRtMbxsl_iYggmPv_pa4EjyHXXTmbm1H_c-JK07cTw_n6o4hF8OLThbqQ");'>
+            </div>
+            <div class="absolute inset-0 bg-primary/5 pointer-events-none"></div>
+            <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
+              <div class="relative flex items-center justify-center">
+                <div class="absolute w-12 h-12 bg-primary/20 rounded-full animate-ping"></div>
+                <div
+                  class="relative w-8 h-8 bg-primary text-white rounded-full flex items-center justify-center border-4 border-white shadow-lg">
+                  <span class="material-symbols-outlined text-sm">home</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- Right Column: Sidebar -->
+      <div class="lg:w-[400px]">
+        <div class="sticky top-24 space-y-6">
+          <!-- Pricing Card -->
+          <div
+            class="p-8 bg-white dark:bg-background-dark border-2 border-primary/10 dark:border-white/10 rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.08)]">
+            <div class="space-y-1 mb-8">
+              <span class="text-[#686b82] text-sm font-semibold">Listing Price</span>
+              <div class="flex items-baseline gap-2">
+                <h2 class="text-4xl font-extrabold text-primary dark:text-white">$3,450,000</h2>
+                <span class="text-[#686b82] text-sm">Est. $21,400/mo</span>
+              </div>
+            </div>
+            <div class="flex flex-col gap-3">
+              <button
+                class="w-full bg-primary text-white font-bold py-4 rounded-xl hover:shadow-lg hover:shadow-primary/30 transition-all flex items-center justify-center gap-2">
+                <span class="material-symbols-outlined">event_available</span>
+                Schedule a Tour
+              </button>
+              <button
+                class="w-full bg-white dark:bg-white/5 text-primary dark:text-white border-2 border-primary/10 dark:border-white/10 font-bold py-4 rounded-xl hover:bg-background-light transition-colors flex items-center justify-center gap-2">
+                <span class="material-symbols-outlined">mail</span>
+                Contact Seller
+              </button>
+              <button
+                class="w-full flex items-center justify-center gap-2 text-[#686b82] hover:text-red-500 font-bold py-2 transition-colors">
+                <span class="material-symbols-outlined text-xl">favorite</span>
+                Save to Favorites
+              </button>
+            </div>
+            <hr class="my-8 border-[#f1f1f4] dark:border-white/10" />
+            <!-- Seller Info -->
+            <div class="space-y-6">
+              <p class="text-xs font-bold uppercase tracking-widest text-[#686b82]">Listed By Agent</p>
+              <div class="flex items-center gap-4">
+                <div class="relative">
+                  <div class="w-16 h-16 rounded-xl bg-cover bg-center border-2 border-[#f1f1f4] dark:border-white/10"
+                    data-alt="Professional real estate agent headshot"
+                    style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCHyWvuwPM6wicHzhlKJY9TQ6OAvzrJ3yKYt-e7XyRR3j4tOu3G-bO9u62u42ZJcawYP00eVU7KqRFvV8Xn8Qnm7e-LQUseXSXUzuzzWuNISoyihY3oaEXNje1QzSswHd_8lbCxym4Vdwa77LRhLt09K45KkJJsxXM9VrFkSKaUZ8z62PHYU2Lekiz6eIZCu9trq1qbJpISCoVzeEkhgF7FtnK3P_2misMd5HjVk0jBtqvmrs9-YSNm85dnh1hajAPEgCXhixlKTVo");'>
+                  </div>
+                  <div
+                    class="absolute -bottom-1 -right-1 w-6 h-6 bg-yellow-400 border-2 border-white rounded-full flex items-center justify-center text-[10px] font-bold">
+                    <span class="material-symbols-outlined text-sm">verified_user</span>
+                  </div>
+                </div>
+                <div class="flex-1">
+                  <h4 class="font-bold text-lg">Alexandra Sterling</h4>
+                  <p class="text-sm text-[#686b82]">Premier Estates Real Estate</p>
+                  <div class="flex items-center gap-1 mt-1">
+                    <div class="flex text-yellow-500">
+                      <span class="material-symbols-outlined text-sm">star</span>
+                      <span class="material-symbols-outlined text-sm">star</span>
+                      <span class="material-symbols-outlined text-sm">star</span>
+                      <span class="material-symbols-outlined text-sm">star</span>
+                      <span class="material-symbols-outlined text-sm">star</span>
+                    </div>
+                    <span class="text-xs font-bold text-[#686b82]">(48 reviews)</span>
+                  </div>
+                </div>
+              </div>
+              <div class="grid grid-cols-2 gap-4">
+                <div class="p-3 bg-[#f1f1f4] dark:bg-white/5 rounded-lg text-center">
+                  <p class="text-[10px] font-bold uppercase text-[#686b82]">Response</p>
+                  <p class="font-bold text-sm">&lt; 15 mins</p>
+                </div>
+                <div class="p-3 bg-[#f1f1f4] dark:bg-white/5 rounded-lg text-center">
+                  <p class="text-[10px] font-bold uppercase text-[#686b82]">Sales</p>
+                  <p class="font-bold text-sm">124 Houses</p>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- Market Insights Mini-Widget -->
+          <div class="p-6 bg-primary/5 dark:bg-white/5 border border-primary/10 dark:border-white/10 rounded-2xl">
+            <div class="flex items-center gap-2 mb-4 text-primary dark:text-white">
+              <span class="material-symbols-outlined">trending_up</span>
+              <span class="font-bold">Market Health</span>
+            </div>
+            <p class="text-sm text-[#686b82] mb-3">Hollywood Hills property values increased by 4.2% in the last 12
+              months.</p>
+            <div class="h-2 w-full bg-[#f1f1f4] dark:bg-white/10 rounded-full overflow-hidden">
+              <div class="h-full bg-primary w-[75%]"></div>
+            </div>
+            <p class="text-[10px] font-bold text-[#686b82] mt-2 uppercase">High Demand Neighborhood</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+  <footer class="mt-12 bg-white dark:bg-background-dark border-t border-[#f1f1f4] dark:border-white/10 py-12 px-6">
+    <div class="max-w-[1280px] mx-auto flex flex-col md:flex-row justify-between items-start md:items-center gap-8">
+      <div class="space-y-4">
+        <div class="flex items-center gap-2 text-primary dark:text-white">
+          <span class="material-symbols-outlined text-2xl font-bold">domain</span>
+          <h2 class="text-lg font-extrabold tracking-tight">EstateMarket</h2>
+        </div>
+        <p class="text-sm text-[#686b82] max-w-xs">Connecting discerning buyers with the world's most exceptional
+          architectural properties since 2018.</p>
+      </div>
+      <div class="flex flex-wrap gap-8 text-sm font-bold">
+        <a class="hover:text-primary transition-colors" href="#">Privacy</a>
+        <a class="hover:text-primary transition-colors" href="#">Terms</a>
+        <a class="hover:text-primary transition-colors" href="#">Support</a>
+        <a class="hover:text-primary transition-colors" href="#">Agents</a>
+        <a class="hover:text-primary transition-colors" href="#">Careers</a>
+      </div>
+      <p class="text-sm text-[#686b82]">© 2023 EstateMarket Inc.</p>
+    </div>
+  </footer>
+  <script src="../assets/js/api.js"></script>
+  <script src="../assets/js/utils.js"></script>
+  <script src="../assets/js/auth.js"></script>
+  <script src="../assets/js/services.js"></script>
+  <script src="../assets/js/property-details.js"></script>
+</body>
+
+</html>
