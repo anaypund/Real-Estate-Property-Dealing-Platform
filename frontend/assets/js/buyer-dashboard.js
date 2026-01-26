@@ -1,5 +1,17 @@
 // Buyer Dashboard Script
 document.addEventListener('DOMContentLoaded', async function () {
+    // Update navigation
+    AuthService.updateNavigation();
+
+    // Setup search functionality
+    setupSearchHandler();
+
+    // Update user name
+    updateUserName();
+
+    // Setup navigation scroll
+    setupNavigationScroll();
+
     // Auth guard - redirect if not authenticated or not a buyer
     const user = AuthService.getUser();
     if (!user || (user.role !== 'buyer' && user.role !== 'agent')) {
@@ -31,6 +43,187 @@ function updateUserInfo(user) {
     if (userName) {
         userName.textContent = user.name;
     }
+}
+
+function setupSearchHandler() {
+    const searchInput = document.querySelector('input[placeholder*="Search"]') ||
+        document.querySelector('input[placeholder*="search"]');
+    const searchBtn = document.querySelector('[data-action="search"]');
+
+    if (searchInput && searchBtn) {
+        const handleSearch = () => {
+            const searchQuery = searchInput.value.trim();
+            if (searchQuery) {
+                window.location.href = `properties.html?search=${encodeURIComponent(searchQuery)}`;
+            } else {
+                window.location.href = 'properties.html';
+            }
+        };
+
+        searchBtn.addEventListener('click', handleSearch);
+        searchInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                handleSearch();
+            }
+        });
+    }
+}
+
+function updateUserName() {
+    const user = AuthService.getUser();
+    if (user && user.name) {
+        const firstName = user.name.split(' ')[0];
+        const firstNameElement = document.querySelector('[data-user="firstName"]');
+        if (firstNameElement) {
+            firstNameElement.textContent = firstName;
+        }
+    }
+}
+
+function setupNavigationScroll() {
+    const navLinks = document.querySelectorAll('[data-scroll]');
+
+    navLinks.forEach(link => {
+        link.addEventListener('click', (e) => {
+            e.preventDefault();
+            const target = link.getAttribute('data-scroll');
+
+            // Remove active class from all links
+            navLinks.forEach(l => {
+                l.classList.remove('bg-primary/10', 'dark:bg-primary/20', 'text-primary', 'dark:text-primary');
+                l.classList.add('hover:bg-background-light', 'dark:hover:bg-[#1e212e]', 'text-[#686b82]', 'dark:text-gray-400');
+            });
+            // Add active class to clicked link
+            link.classList.add('bg-primary/10', 'dark:bg-primary/20', 'text-primary', 'dark:text-primary');
+            link.classList.remove('hover:bg-background-light', 'dark:hover:bg-[#1e212e]', 'text-[#686b82]', 'dark:text-gray-400');
+
+            switch (target) {
+                case 'top':
+                    // Scroll to top
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                    break;
+
+                case 'saved':
+                    // Scroll to Saved Properties section
+                    scrollToAndHighlight('saved-section');
+                    break;
+
+                case 'inquiries':
+                    // Scroll to Recent Inquiries section
+                    scrollToAndHighlight('inquiries-section');
+                    break;
+
+                case 'visits':
+                    // Scroll to Upcoming Visits section
+                    scrollToAndHighlight('visits-section');
+                    break;
+
+                case 'profile':
+                    // Scroll to top
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                    break;
+            }
+        });
+    });
+}
+
+function scrollToAndHighlight(elementId) {
+    const element = document.getElementById(elementId);
+    if (element) {
+        // Scroll to element with offset for header
+        const elementPosition = element.getBoundingClientRect().top + window.pageYOffset;
+        const offsetPosition = elementPosition - 100; // 100px offset for header
+
+        window.scrollTo({
+            top: offsetPosition,
+            behavior: 'smooth'
+        });
+
+        // Highlight after scroll
+        setTimeout(() => highlightElement(elementId), 500);
+    }
+}
+
+function highlightElement(elementId) {
+    const element = document.getElementById(elementId);
+    if (!element) return;
+
+    // Create trail element
+    const trail = document.createElement('div');
+    trail.style.position = 'absolute';
+    trail.style.width = '4px';
+    trail.style.height = '4px';
+    trail.style.background = 'linear-gradient(90deg, transparent, #252e7e, transparent)';
+    trail.style.borderRadius = '2px';
+    trail.style.pointerEvents = 'none';
+    trail.style.zIndex = '1000';
+    trail.style.boxShadow = '0 0 10px #252e7e, 0 0 20px #252e7e';
+
+    // Make element position relative if not already
+    const originalPosition = element.style.position;
+    if (!originalPosition || originalPosition === 'static') {
+        element.style.position = 'relative';
+    }
+
+    element.appendChild(trail);
+
+    const rect = element.getBoundingClientRect();
+    const width = element.offsetWidth;
+    const height = element.offsetHeight;
+    const perimeter = 2 * (width + height);
+    const duration = 500; // 0.5 seconds for complete circle
+    const startTime = Date.now();
+
+    function animateTrail() {
+        const elapsed = Date.now() - startTime;
+        const progress = Math.min(elapsed / duration, 1);
+        const distance = progress * perimeter;
+
+        let x, y, rotation;
+        const trailLength = 40;
+
+        if (distance < width) {
+            // Top edge (left to right)
+            x = distance - 10;
+            y = -10;
+            rotation = 0;
+        } else if (distance < width + height) {
+            // Right edge (top to bottom)
+            x = width - 10;
+            y = distance - width - 10;
+            rotation = 90;
+        } else if (distance < 2 * width + height) {
+            // Bottom edge (right to left)
+            x = width - (distance - width - height) - 10;
+            y = height - 10;
+            rotation = 180;
+        } else {
+            // Left edge (bottom to top)
+            x = -10;
+            y = height - (distance - 2 * width - height);
+            rotation = 270;
+        }
+
+        trail.style.left = `${x}px`;
+        trail.style.top = `${y}px`;
+        trail.style.transform = `rotate(${rotation}deg)`;
+        trail.style.width = `${trailLength}px`;
+        trail.style.height = '3px';
+
+        if (progress < 1) {
+            requestAnimationFrame(animateTrail);
+        } else {
+            // Remove trail and restore position
+            setTimeout(() => {
+                trail.remove();
+                if (!originalPosition || originalPosition === 'static') {
+                    element.style.position = '';
+                }
+            }, 200);
+        }
+    }
+
+    animateTrail();
 }
 
 async function loadFavorites() {

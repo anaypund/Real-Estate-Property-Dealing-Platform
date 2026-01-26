@@ -13,6 +13,8 @@ exports.getProperties = async (req, res, next) => {
             propertyType,
             amenities,
             status,
+            seller,
+            search,
             page = 1,
             limit = 10,
             sort = '-createdAt'
@@ -20,6 +22,29 @@ exports.getProperties = async (req, res, next) => {
 
         // Build query
         let query = {};
+
+        // Global search across multiple fields
+        if (search) {
+            const searchRegex = new RegExp(search, 'i');
+
+            // Extract bedroom number if search contains "bhk" or bedroom-related terms
+            const bedroomMatch = search.match(/(\d+)\s*bhk/i);
+            const bedroomNumber = bedroomMatch ? parseInt(bedroomMatch[1]) : null;
+
+            query.$or = [
+                { title: searchRegex },
+                { description: searchRegex },
+                { 'location.address': searchRegex },
+                { 'location.city': searchRegex },
+                { 'location.state': searchRegex },
+                { 'location.zipCode': searchRegex }
+            ];
+
+            // Add bedroom search if number found
+            if (bedroomNumber) {
+                query.$or.push({ bedrooms: bedroomNumber });
+            }
+        }
 
         if (city) query['location.city'] = new RegExp(city, 'i');
         if (minPrice || maxPrice) {
@@ -29,8 +54,9 @@ exports.getProperties = async (req, res, next) => {
         }
         if (bedrooms) query.bedrooms = { $gte: bedrooms };
         if (propertyType) query.propertyType = propertyType;
+        if (seller) query.seller = seller; // Filter by seller ID
         if (status) query.status = status;
-        else query.status = 'active'; // Default to active properties
+        else if (!seller) query.status = 'active'; // Default to active properties only if not filtering by seller
 
         if (amenities) {
             const amenitiesArray = amenities.split(',');
@@ -58,7 +84,6 @@ exports.getProperties = async (req, res, next) => {
         next(error);
     }
 };
-
 // @desc    Get single property
 // @route   GET /api/properties/:id
 // @access  Public

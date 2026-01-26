@@ -3,7 +3,7 @@ document.addEventListener('DOMContentLoaded', async function () {
     // Auth guard - redirect if not authenticated or not a seller/agent
     const user = AuthService.getUser();
     if (!user || (user.role !== 'seller' && user.role !== 'agent')) {
-        showToast('Please login as a seller/agent to access this page', 'warning');
+        showToast('Please login as a seller to access this page', 'warning');
         setTimeout(() => window.location.href = 'login.html', 1500);
         return;
     }
@@ -14,12 +14,13 @@ document.addEventListener('DOMContentLoaded', async function () {
     // Update navigation to show profile dropdown
     AuthService.updateNavigation();
 
+    // Setup navigation scroll
+    setupNavigationScroll();
+
     // Load dashboard data
-    await Promise.all([
-        loadDashboardStats(),
-        loadMyListings(),
-        loadLeads()
-    ]);
+    await loadDashboardStats();
+    await loadMyListings();
+    await loadLeads();
 
     // Setup add property button
     setupAddPropertyButton();
@@ -30,6 +31,149 @@ function updateUserInfo(user) {
     if (userName) {
         userName.textContent = user.name;
     }
+}
+
+function setupNavigationScroll() {
+    const navLinks = document.querySelectorAll('[data-scroll]');
+
+    navLinks.forEach(link => {
+        link.addEventListener('click', (e) => {
+            e.preventDefault();
+            const target = link.getAttribute('data-scroll');
+
+            // Remove active class from all links
+            navLinks.forEach(l => l.classList.remove('sidebar-active'));
+            // Add active class to clicked link
+            link.classList.add('sidebar-active');
+
+            switch (target) {
+                case 'top':
+                    // Scroll to top
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                    break;
+
+                case 'listings':
+                    // Scroll to Active Listings section
+                    scrollToAndHighlight('listings-section');
+                    break;
+
+                case 'leads':
+                    // Scroll to Leads section
+                    scrollToAndHighlight('leads-section');
+                    break;
+
+                case 'analytics':
+                    // Scroll to Market Trends section
+                    scrollToAndHighlight('analytics-section');
+                    break;
+
+                case 'settings':
+                    // Scroll to top and highlight user profile
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                    setTimeout(() => highlightElement('user-profile'), 500);
+                    break;
+            }
+        });
+    });
+}
+
+function scrollToAndHighlight(elementId) {
+    const element = document.getElementById(elementId);
+    if (element) {
+        // Scroll to element with offset for header
+        const elementPosition = element.getBoundingClientRect().top + window.pageYOffset;
+        const offsetPosition = elementPosition - 100; // 100px offset for header
+
+        window.scrollTo({
+            top: offsetPosition,
+            behavior: 'smooth'
+        });
+
+        // Highlight after scroll
+        setTimeout(() => highlightElement(elementId), 500);
+    }
+}
+
+function highlightElement(elementId) {
+    const element = document.getElementById(elementId);
+    if (!element) return;
+
+    // Create trail element
+    const trail = document.createElement('div');
+    trail.style.position = 'absolute';
+    trail.style.width = '4px';
+    trail.style.height = '4px';
+    trail.style.background = 'linear-gradient(90deg, transparent, #252e7e, transparent)';
+    trail.style.borderRadius = '2px';
+    trail.style.pointerEvents = 'none';
+    trail.style.zIndex = '1000';
+    trail.style.boxShadow = '0 0 10px #252e7e, 0 0 20px #252e7e';
+
+    // Make element position relative if not already
+    const originalPosition = element.style.position;
+    if (!originalPosition || originalPosition === 'static') {
+        element.style.position = 'relative';
+    }
+
+    element.appendChild(trail);
+
+    const rect = element.getBoundingClientRect();
+    const width = element.offsetWidth;
+    const height = element.offsetHeight;
+    const perimeter = 2 * (width + height);
+    const duration = 500; // 1.5 seconds for complete circle
+    const startTime = Date.now();
+
+    function animateTrail() {
+        const elapsed = Date.now() - startTime;
+        const progress = Math.min(elapsed / duration, 1);
+        const distance = progress * perimeter;
+
+        let x, y, rotation;
+        const trailLength = 40;
+
+        if (distance < width) {
+            // Top edge (left to right)
+            x = distance - 10;
+            y = -10; // Slightly above to center on border
+            rotation = 0;
+        } else if (distance < width + height) {
+            // Right edge (top to bottom)
+            x = width - 10;
+            y = distance - width - 10;
+            rotation = 90;
+        } else if (distance < 2 * width + height) {
+            // Bottom edge (right to left)
+            x = width - (distance - width - height) - 10;
+            y = height - 10;
+            rotation = 180;
+        } else {
+            // Left edge (bottom to top)
+            x = -10;
+            y = height - (distance - 2 * width - height);
+            rotation = 270;
+        }
+
+        trail.style.left = `${x}px`;
+        trail.style.top = `${y}px`;
+        trail.style.transform = `rotate(${rotation}deg)`;
+        trail.style.width = `${trailLength}px`;
+        trail.style.height = '3px';
+
+        if (progress < 1) {
+            requestAnimationFrame(animateTrail);
+        } else {
+            // Remove trail and restore position
+            setTimeout(() => {
+                trail.remove();
+                if (!originalPosition || originalPosition === 'static') {
+                    element.style.position = '';
+                }
+            }, 200);
+        }
+    }
+
+    animateTrail();
 }
 
 async function loadDashboardStats() {
@@ -46,39 +190,34 @@ async function loadDashboardStats() {
 
 function renderDashboardStats(stats) {
     // Update total page views
-    const viewsCard = document.querySelectorAll('.col-span-12.lg\\:col-span-4')[0];
-    if (viewsCard) {
-        const viewsValue = viewsCard.querySelector('.text-2xl.font-black');
-        if (viewsValue) {
-            viewsValue.textContent = (stats.totalViews || 0).toLocaleString();
-        }
+    const viewsElement = document.querySelector('[data-stat="total-views"]');
+    if (viewsElement) {
+        viewsElement.textContent = (stats.totalViews || 0).toLocaleString();
     }
 
-    // Update new lead inquiries
-    const leadsCard = document.querySelectorAll('.col-span-12.lg\\:col-span-4')[1];
-    if (leadsCard) {
-        const leadsValue = leadsCard.querySelector('.text-2xl.font-black');
-        if (leadsValue) {
-            leadsValue.textContent = stats.totalLeads || 0;
-        }
+    // Update new lead inquiries (total leads)
+    const leadsElement = document.querySelector('[data-stat="total-leads"]');
+    if (leadsElement) {
+        leadsElement.textContent = stats.totalLeads || 0;
     }
 
-    // Update active ad campaigns
-    const campaignsCard = document.querySelectorAll('.col-span-12.lg\\:col-span-4')[2];
-    if (campaignsCard) {
-        const campaignsValue = campaignsCard.querySelector('.text-2xl.font-black');
-        if (campaignsValue) {
-            campaignsValue.textContent = '0' + (stats.activeCampaigns || 8);
-        }
+    // Update active ad campaigns (total properties uploaded by seller)
+    const campaignsElement = document.querySelector('[data-stat="active-campaigns"]');
+    if (campaignsElement) {
+        campaignsElement.textContent = stats.totalProperties || 0;
     }
 }
 
 async function loadMyListings() {
     try {
+        const user = AuthService.getUser();
+
         const response = await PropertyService.getProperties({
-            seller: AuthService.getUser()._id,
+            seller: user.id,
             limit: 10
         });
+
+        console.log('Properties response:', response);
 
         if (response.success && response.data && response.data.length > 0) {
             renderMyListings(response.data);
@@ -365,8 +504,12 @@ function renderLeadsSection(leads) {
 }
 
 function setupAddPropertyButton() {
-    const addBtn = document.querySelector('button:has(.material-symbols-outlined:contains("add_circle"))') ||
-        document.querySelector('.bg-primary.text-white.px-6.py-3');
+    // Find the add property button by looking for the button with the add_circle icon
+    const buttons = Array.from(document.querySelectorAll('button'));
+    const addBtn = buttons.find(btn => {
+        const icon = btn.querySelector('.material-symbols-outlined');
+        return icon && icon.textContent.trim() === 'add_circle';
+    }) || document.querySelector('.bg-primary.text-white.px-6.py-3');
 
     if (addBtn) {
         addBtn.onclick = function () {

@@ -73,17 +73,6 @@
                 <h2 class="text-[#121317] dark:text-white text-xl font-bold leading-tight tracking-[-0.015em]">
                     RealEstateHub</h2>
             </div>
-            <label class="flex flex-col min-w-64 !h-10">
-                <div class="flex w-full flex-1 items-stretch rounded-lg h-full">
-                    <div
-                        class="text-[#686b82] flex border-none bg-[#f1f1f4] dark:bg-[#1e212e] items-center justify-center pl-4 rounded-l-lg">
-                        <span class="material-symbols-outlined text-xl">search</span>
-                    </div>
-                    <input
-                        class="form-input flex w-full min-w-0 flex-1 border-none bg-[#f1f1f4] dark:bg-[#1e212e] text-[#121317] dark:text-white focus:ring-0 h-full placeholder:text-[#686b82] px-4 rounded-r-lg text-sm"
-                        placeholder="Search properties, areas, or agents..." />
-                </div>
-            </label>
         </div>
         <div class="flex items-center gap-4">
             <button
@@ -102,23 +91,24 @@
             <div class="flex flex-col gap-8">
                 <div class="flex flex-col gap-2">
                     <p class="px-3 text-[10px] font-bold text-[#686b82] uppercase tracking-widest">Main Menu</p>
-                    <div class="flex items-center gap-3 px-3 py-2.5 rounded-lg active-nav cursor-pointer">
+                    <div data-scroll="top"
+                        class="flex items-center gap-3 px-3 py-2.5 rounded-lg active-nav cursor-pointer">
                         <span class="material-symbols-outlined">dashboard</span>
                         <p class="text-sm font-medium">Overview</p>
                     </div>
-                    <div
+                    <div data-scroll="saved"
                         class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-background-light dark:hover:bg-[#1e212e] text-[#686b82] dark:text-gray-400 cursor-pointer">
                         <span class="material-symbols-outlined">favorite</span>
                         <p class="text-sm font-medium">Saved Properties</p>
                     </div>
-                    <div
+                    <div data-scroll="inquiries"
                         class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-background-light dark:hover:bg-[#1e212e] text-[#686b82] dark:text-gray-400 cursor-pointer">
                         <span class="material-symbols-outlined">chat_bubble</span>
                         <p class="text-sm font-medium">Inquiries</p>
                         <span
                             class="ml-auto bg-primary/10 text-primary text-[10px] font-bold px-1.5 py-0.5 rounded">2</span>
                     </div>
-                    <div
+                    <div data-scroll="visits"
                         class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-background-light dark:hover:bg-[#1e212e] text-[#686b82] dark:text-gray-400 cursor-pointer">
                         <span class="material-symbols-outlined">event</span>
                         <p class="text-sm font-medium">Visits</p>
@@ -126,16 +116,16 @@
                 </div>
                 <div class="flex flex-col gap-2">
                     <p class="px-3 text-[10px] font-bold text-[#686b82] uppercase tracking-widest">Preferences</p>
-                    <div
+                    <div data-scroll="profile"
                         class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-background-light dark:hover:bg-[#1e212e] text-[#686b82] dark:text-gray-400 cursor-pointer">
                         <span class="material-symbols-outlined">person</span>
                         <p class="text-sm font-medium">Profile</p>
                     </div>
-                    <div
+                    <!-- <div
                         class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-background-light dark:hover:bg-[#1e212e] text-[#686b82] dark:text-gray-400 cursor-pointer">
                         <span class="material-symbols-outlined">settings</span>
                         <p class="text-sm font-medium">Settings</p>
-                    </div>
+                    </div> -->
                 </div>
             </div>
             <div class="bg-primary/5 dark:bg-primary/10 rounded-xl p-4 mt-auto">
@@ -152,8 +142,9 @@
             <div class="flex flex-wrap justify-between items-end gap-4 mb-8">
                 <div class="flex flex-col gap-1">
                     <p class="text-primary text-sm font-bold tracking-wider uppercase">Buyer Dashboard</p>
-                    <h1 class="text-[#121317] dark:text-white text-4xl font-black leading-tight tracking-[-0.033em]">
-                        Welcome back, Alex</h1>
+                    <h1 class="text-[#121317] dark:text-white text-3xl font-black tracking-tight">Welcome back,
+                        <span data-user="firstName">User</span>
+                    </h1>
                     <p class="text-[#686b82] dark:text-gray-400 text-base font-normal">You have 3 visits scheduled and 2
                         new responses to your inquiries.</p>
                 </div>
@@ -173,8 +164,8 @@
             <!-- Bento Grid -->
             <div class="grid grid-cols-12 gap-6 mb-12">
                 <!-- Upcoming Visits -->
-                <div
-                    class="col-span-12 lg:col-span-4 bg-white dark:bg-[#1e212e] rounded-xl border border-[#f1f1f4] dark:border-[#2a2d3d] flex flex-col p-6 bento-card">
+                <div id="visits-section"
+                    class="col-span-12 lg:col-span-4 bg-white dark:bg-[#1e212e] rounded-xl border border-[#f1f1f4] dark:border-[#2a2d3d] flex flex-col p-6 bento-card transition-all duration-300">
                     <div class="flex items-center justify-between mb-6">
                         <h2 class="text-lg font-bold">Upcoming Visits</h2>
                         <span class="material-symbols-outlined text-[#686b82]">calendar_month</span>
@@ -224,8 +215,8 @@
                     </button>
                 </div>
                 <!-- Recent Inquiries -->
-                <div
-                    class="col-span-12 lg:col-span-8 bg-white dark:bg-[#1e212e] rounded-xl border border-[#f1f1f4] dark:border-[#2a2d3d] p-6 bento-card">
+                <div id="inquiries-section"
+                    class="col-span-12 lg:col-span-8 bg-white dark:bg-[#1e212e] rounded-xl border border-[#f1f1f4] dark:border-[#2a2d3d] p-6 bento-card transition-all duration-300">
                     <div class="flex items-center justify-between mb-6">
                         <h2 class="text-lg font-bold">Recent Inquiries</h2>
                         <button class="text-primary text-xs font-bold flex items-center gap-1">
@@ -249,7 +240,7 @@
                                         <div class="flex items-center gap-3">
                                             <div class="size-10 rounded bg-gray-200 bg-cover bg-center"
                                                 data-alt="Thumbnail of a modern condo unit"
-                                                style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCwlCLT9HdMaUNNJIDFIHxZO2TWRLnBFvSoKW4rul_cihYbjLW-0mivJPlL_MtFSl1V6nGF79Xe1-fLS48e4bkNaPe5ls1e-vGDmUrFpuvM3PBAodXQ48vhcZeJi7uMo0p1AdKRlybsP-zxl7eiZhJ0kvvJQtr8frYTNh3bf716t9rFvwc5Nh7hEU8I3arRMWMGLuTpRyLhBUz2ohOCDO6_dNnGoOirxZxEaga4uetwmezHZd9x3DEyK4pZonNyjX-lDj-2_s2IZF8')">
+                                                style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCwlCLT9HdMaUNNJIDFIHxZO2TWRLnBFvSoKW4rul_cihYbjLW-0mivJPlL_MtFSl1V6nGF79Xe1-fLS48e4bkNaPe5ls1e-vGDmUrFpuvM3PBAodXQ48vhcZeJi7uMo0p1AdKRlybsP-zxl7eiZhJ0kvvJQtr8frYTNh3bf716t9rFvwc5Nh7hEU8I3nXjhbBbbFSSoDk')">
                                             </div>
                                             <p class="text-sm font-bold">Skyline Terrace Condo</p>
                                         </div>
@@ -314,14 +305,25 @@
                 </div>
             </div>
             <!-- Saved Properties Section -->
-            <div class="mb-12">
+            <div id="saved-section" class="mb-12 transition-all duration-300">
                 <div class="flex items-center justify-between mb-6">
                     <h2 class="text-2xl font-black tracking-tight">Saved Properties</h2>
                     <div class="flex gap-2">
-                        <button
-                            class="size-10 rounded-lg border border-[#f1f1f4] dark:border-[#2a2d3d] flex items-center justify-center bg-white dark:bg-[#1e212e]">
-                            <span class="material-symbols-outlined text-sm">grid_view</span>
-                        </button>
+                        <div class="relative">
+                            <div class="flex items-center gap-2">
+                                <div class="relative flex-1">
+                                    <span
+                                        class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-gray-400">search</span>
+                                    <input type="text" placeholder="Search properties by location, type, or features..."
+                                        class="w-full pl-12 pr-4 py-3 rounded-xl border border-gray-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 focus:ring-2 focus:ring-primary focus:border-transparent" />
+                                </div>
+                                <button data-action="search"
+                                    class="bg-primary text-white px-6 py-3 rounded-xl font-bold flex items-center gap-2 hover:bg-opacity-90 transition-all">
+                                    <span class="material-symbols-outlined">search</span>
+                                    Search
+                                </button>
+                            </div>
+                        </div>
                         <button
                             class="size-10 rounded-lg border border-[#f1f1f4] dark:border-[#2a2d3d] flex items-center justify-center bg-white dark:bg-[#1e212e]">
                             <span class="material-symbols-outlined text-sm">list</span>

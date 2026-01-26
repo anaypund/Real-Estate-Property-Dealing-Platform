@@ -2,9 +2,15 @@
 let currentProperty = null;
 
 document.addEventListener('DOMContentLoaded', async function () {
-    const propertyId = getPropertyIdFromUrl();
-
+    // Update navigation
     AuthService.updateNavigation();
+
+    // Setup search functionality
+    setupSearchHandler();
+
+    // Get property ID from URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const propertyId = urlParams.get('id');
 
     if (!propertyId) {
         showToast('Property not found', 'error');
@@ -12,6 +18,7 @@ document.addEventListener('DOMContentLoaded', async function () {
         return;
     }
 
+    // Load property details
     await loadPropertyDetails(propertyId);
     setupForms();
 });
@@ -32,6 +39,30 @@ async function loadPropertyDetails(id) {
         hideLoader();
         showToast(error.message || 'Failed to load property details', 'error');
         setTimeout(() => window.location.href = 'properties.html', 2000);
+    }
+}
+
+function setupSearchHandler() {
+    const searchInput = document.querySelector('input[placeholder*="Search"]') ||
+        document.querySelector('input[placeholder*="search"]');
+    const searchBtn = document.querySelector('[data-action="search"]');
+
+    if (searchInput && searchBtn) {
+        const handleSearch = () => {
+            const searchQuery = searchInput.value.trim();
+            if (searchQuery) {
+                window.location.href = `properties.html?search=${encodeURIComponent(searchQuery)}`;
+            } else {
+                window.location.href = 'properties.html';
+            }
+        };
+
+        searchBtn.addEventListener('click', handleSearch);
+        searchInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                handleSearch();
+            }
+        });
     }
 }
 

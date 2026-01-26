@@ -24,19 +24,29 @@ document.addEventListener('DOMContentLoaded', async function () {
         });
     }
 
-    // Search form handler
-    const searchForm = document.querySelector('.bg-white.dark\\:bg-slate-900.p-2');
-    const searchInput = searchForm?.querySelector('input[type="text"]');
-    const searchButton = searchForm?.querySelector('button.bg-primary');
+    // Search functionality
+    const searchInput = document.querySelector('input[placeholder*="Search"]') ||
+        document.querySelector('input[placeholder*="search"]');
+    const searchBtn = document.querySelector('[data-action="search"]') ||
+        document.querySelector('button:has(.material-symbols-outlined)') ||
+        Array.from(document.querySelectorAll('button')).find(btn => btn.textContent.trim() === 'Search');
 
-    if (searchButton && searchInput) {
-        searchButton.addEventListener('click', (e) => {
-            e.preventDefault();
+    if (searchBtn && searchInput) {
+        const handleSearch = () => {
             const searchQuery = searchInput.value.trim();
             if (searchQuery) {
-                window.location.href = `properties.html?city=${encodeURIComponent(searchQuery)}`;
+                // Redirect to properties page with search query
+                window.location.href = `properties.html?search=${encodeURIComponent(searchQuery)}`;
             } else {
+                // If empty, just go to properties page
                 window.location.href = 'properties.html';
+            }
+        };
+
+        searchBtn.addEventListener('click', handleSearch);
+        searchInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                handleSearch();
             }
         });
     }

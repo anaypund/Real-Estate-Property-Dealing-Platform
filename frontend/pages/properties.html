@@ -79,11 +79,19 @@
                 </div>
                 <div class="flex items-center gap-4 flex-1 max-w-md mx-8">
                     <div class="relative w-full">
-                        <span
-                            class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">search</span>
-                        <input
-                            class="w-full bg-[#f1f1f4] dark:bg-white/5 border-none rounded-xl pl-10 pr-4 py-2 text-sm focus:ring-2 focus:ring-primary/20"
-                            placeholder="Search location, project, or developer..." type="text" />
+                        <div class="flex items-center gap-2">
+                            <div class="relative flex-1">
+                                <span
+                                    class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-gray-400">search</span>
+                                <input type="text" placeholder="Search properties by location, type, or features..."
+                                    class="w-full pl-12 pr-4 py-3 rounded-xl border border-gray-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 focus:ring-2 focus:ring-primary focus:border-transparent" />
+                            </div>
+                            <button data-action="search"
+                                class="bg-primary text-white px-6 py-3 rounded-xl font-bold flex items-center gap-2 hover:bg-opacity-90 transition-all">
+                                <span class="material-symbols-outlined">search</span>
+                                Search
+                            </button>
+                        </div>
                     </div>
                 </div>
                 <div class="flex items-center gap-3">

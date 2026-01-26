@@ -15,11 +15,21 @@ document.addEventListener('DOMContentLoaded', async function () {
     // Get filters from URL if any
     const urlParams = getQueryParams();
     if (urlParams.city) currentFilters.city = urlParams.city;
+    if (urlParams.search) {
+        currentFilters.search = urlParams.search;
+        // Populate search input if exists
+        const searchInput = document.querySelector('input[placeholder*="Search"]') ||
+            document.querySelector('input[placeholder*="search"]');
+        if (searchInput) {
+            searchInput.value = urlParams.search;
+        }
+    }
 
     AuthService.updateNavigation();
 
     // Initialize page
     await loadProperties();
+    setupSearchHandler();
     setupFilterHandlers();
     setupSortHandler();
 });
@@ -152,6 +162,28 @@ async function handleFavoriteToggle(propertyId, button) {
         } else {
             showToast(error.message || 'Failed to save property', 'error');
         }
+    }
+}
+
+function setupSearchHandler() {
+    const searchInput = document.querySelector('input[placeholder*="Search"]') ||
+        document.querySelector('input[placeholder*="search"]');
+    const searchBtn = document.querySelector('[data-action="search"]');
+
+    if (searchInput && searchBtn) {
+        const handleSearch = () => {
+            const searchQuery = searchInput.value.trim();
+            currentFilters.search = searchQuery || undefined;
+            currentFilters.page = 1; // Reset to first page
+            loadProperties();
+        };
+
+        searchBtn.addEventListener('click', handleSearch);
+        searchInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                handleSearch();
+            }
+        });
     }
 }
 
