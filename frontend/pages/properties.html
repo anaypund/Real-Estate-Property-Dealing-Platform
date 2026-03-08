@@ -48,6 +48,25 @@
             -ms-overflow-style: none;
             scrollbar-width: none;
         }
+
+        /* Dual range slider */
+        #priceMin, #priceMax {
+            -webkit-appearance: none;
+            appearance: none;
+            pointer-events: none;
+        }
+        #priceMin::-webkit-slider-thumb,
+        #priceMax::-webkit-slider-thumb {
+            pointer-events: auto;
+        }
+        #priceMax {
+            position: relative;
+            z-index: 2;
+        }
+        #priceMin {
+            position: relative;
+            z-index: 1;
+        }
     </style>
 </head>
 
@@ -115,7 +134,7 @@
                             <button
                                 class="text-xs font-bold text-primary dark:text-primary/80 uppercase tracking-wider">Reset</button>
                         </div>
-                        <p class="text-xs text-gray-500 dark:text-gray-400">Showing 428 results in California</p>
+                        <p id="filter-results-text" class="text-xs text-gray-500 dark:text-gray-400">Showing all properties</p>
                     </div>
                     <!-- Price Slider -->
                     <div class="space-y-4">
@@ -123,21 +142,19 @@
                             <span class="material-symbols-outlined text-primary text-xl">payments</span>
                             Price Range
                         </label>
-                        <div class="relative pt-6 pb-2">
-                            <div class="h-1.5 w-full bg-[#f1f1f4] dark:bg-white/10 rounded-full relative">
-                                <div class="absolute left-[20%] right-[30%] h-full bg-primary rounded-full"></div>
-                                <div
-                                    class="absolute left-[20%] top-1/2 -translate-y-1/2 size-4 bg-white border-2 border-primary rounded-full shadow-md cursor-pointer">
-                                </div>
-                                <div
-                                    class="absolute right-[30%] top-1/2 -translate-y-1/2 size-4 bg-white border-2 border-primary rounded-full shadow-md cursor-pointer">
-                                </div>
+                        <div class="relative pt-2 pb-2">
+                            <div class="relative h-1.5 w-full bg-[#f1f1f4] dark:bg-white/10 rounded-full">
+                                <div id="priceRangeTrack" class="absolute h-full bg-primary rounded-full" style="left:0%;right:0%"></div>
                             </div>
+                            <input type="range" id="priceMin" min="0" max="10000000" step="50000" value="0"
+                                class="absolute top-1.5 w-full h-1.5 appearance-none bg-transparent pointer-events-auto [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:bg-white [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-primary [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:shadow-md [&::-webkit-slider-thumb]:cursor-pointer" />
+                            <input type="range" id="priceMax" min="0" max="10000000" step="50000" value="10000000"
+                                class="absolute top-1.5 w-full h-1.5 appearance-none bg-transparent pointer-events-auto [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:bg-white [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-primary [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:shadow-md [&::-webkit-slider-thumb]:cursor-pointer" />
                             <div class="flex justify-between mt-4">
-                                <span
-                                    class="text-xs font-medium px-2 py-1 bg-[#f1f1f4] dark:bg-white/5 rounded">$450k</span>
-                                <span
-                                    class="text-xs font-medium px-2 py-1 bg-[#f1f1f4] dark:bg-white/5 rounded">$3.2M</span>
+                                <span id="priceMinLabel"
+                                    class="text-xs font-medium px-2 py-1 bg-[#f1f1f4] dark:bg-white/5 rounded">$0</span>
+                                <span id="priceMaxLabel"
+                                    class="text-xs font-medium px-2 py-1 bg-[#f1f1f4] dark:bg-white/5 rounded">$10M</span>
                             </div>
                         </div>
                     </div>
@@ -147,19 +164,13 @@
                             <span class="material-symbols-outlined text-primary text-xl">apartment</span>
                             Property Type
                         </label>
-                        <div class="flex flex-wrap gap-2">
-                            <div
-                                class="px-3 py-1.5 rounded-lg bg-primary text-white text-xs font-medium cursor-pointer">
-                                Apartment</div>
-                            <div
-                                class="px-3 py-1.5 rounded-lg bg-[#f1f1f4] dark:bg-white/5 text-xs font-medium cursor-pointer hover:bg-gray-200">
-                                Villa</div>
-                            <div
-                                class="px-3 py-1.5 rounded-lg bg-[#f1f1f4] dark:bg-white/5 text-xs font-medium cursor-pointer hover:bg-gray-200">
-                                Townhouse</div>
-                            <div
-                                class="px-3 py-1.5 rounded-lg bg-[#f1f1f4] dark:bg-white/5 text-xs font-medium cursor-pointer hover:bg-gray-200">
-                                Loft</div>
+                        <div id="propertyTypeChips" class="flex flex-wrap gap-2">
+                            <div data-type="" class="px-3 py-1.5 rounded-lg bg-primary text-white text-xs font-medium cursor-pointer">All</div>
+                            <div data-type="house" class="px-3 py-1.5 rounded-lg bg-[#f1f1f4] dark:bg-white/5 text-xs font-medium cursor-pointer hover:bg-gray-200">House</div>
+                            <div data-type="apartment" class="px-3 py-1.5 rounded-lg bg-[#f1f1f4] dark:bg-white/5 text-xs font-medium cursor-pointer hover:bg-gray-200">Apartment</div>
+                            <div data-type="villa" class="px-3 py-1.5 rounded-lg bg-[#f1f1f4] dark:bg-white/5 text-xs font-medium cursor-pointer hover:bg-gray-200">Villa</div>
+                            <div data-type="townhouse" class="px-3 py-1.5 rounded-lg bg-[#f1f1f4] dark:bg-white/5 text-xs font-medium cursor-pointer hover:bg-gray-200">Townhouse</div>
+                            <div data-type="condo" class="px-3 py-1.5 rounded-lg bg-[#f1f1f4] dark:bg-white/5 text-xs font-medium cursor-pointer hover:bg-gray-200">Condo</div>
                         </div>
                     </div>
                     <!-- Bedrooms Segmented -->
@@ -168,14 +179,16 @@
                             <span class="material-symbols-outlined text-primary text-xl">bed</span>
                             Bedrooms
                         </label>
-                        <div class="flex bg-[#f1f1f4] dark:bg-white/5 p-1 rounded-xl">
-                            <button
-                                class="flex-1 py-1.5 text-xs font-medium rounded-lg hover:bg-white dark:hover:bg-white/10 transition-all">Any</button>
-                            <button
-                                class="flex-1 py-1.5 text-xs font-medium bg-white dark:bg-white/10 shadow-sm rounded-lg">2+</button>
-                            <button
+                        <div id="bedroomFilter" class="flex bg-[#f1f1f4] dark:bg-white/5 p-1 rounded-xl">
+                            <button data-beds=""
+                                class="flex-1 py-1.5 text-xs font-medium bg-white dark:bg-white/10 shadow-sm rounded-lg">Any</button>
+                            <button data-beds="1"
+                                class="flex-1 py-1.5 text-xs font-medium rounded-lg hover:bg-white dark:hover:bg-white/10 transition-all">1+</button>
+                            <button data-beds="2"
+                                class="flex-1 py-1.5 text-xs font-medium rounded-lg hover:bg-white dark:hover:bg-white/10 transition-all">2+</button>
+                            <button data-beds="3"
                                 class="flex-1 py-1.5 text-xs font-medium rounded-lg hover:bg-white dark:hover:bg-white/10 transition-all">3+</button>
-                            <button
+                            <button data-beds="4"
                                 class="flex-1 py-1.5 text-xs font-medium rounded-lg hover:bg-white dark:hover:bg-white/10 transition-all">4+</button>
                         </div>
                     </div>
@@ -185,34 +198,66 @@
                             <span class="material-symbols-outlined text-primary text-xl">colors_spark</span>
                             Amenities
                         </label>
-                        <div class="space-y-2">
+                        <div id="amenitiesFilter" class="space-y-2 max-h-52 overflow-y-auto pr-1">
                             <label class="flex items-center gap-3 cursor-pointer group">
-                                <input checked="" class="rounded border-gray-300 text-primary focus:ring-primary"
-                                    type="checkbox" />
-                                <span
-                                    class="text-sm text-gray-600 dark:text-gray-300 group-hover:text-primary transition-colors">Swimming
-                                    Pool</span>
+                                <input data-amenity="Swimming Pool" class="rounded border-gray-300 text-primary focus:ring-primary" type="checkbox" />
+                                <span class="text-sm text-gray-600 dark:text-gray-300 group-hover:text-primary transition-colors">Swimming Pool</span>
                             </label>
                             <label class="flex items-center gap-3 cursor-pointer group">
-                                <input class="rounded border-gray-300 text-primary focus:ring-primary"
-                                    type="checkbox" />
-                                <span
-                                    class="text-sm text-gray-600 dark:text-gray-300 group-hover:text-primary transition-colors">Fitness
-                                    Center</span>
+                                <input data-amenity="Fitness Center" class="rounded border-gray-300 text-primary focus:ring-primary" type="checkbox" />
+                                <span class="text-sm text-gray-600 dark:text-gray-300 group-hover:text-primary transition-colors">Fitness Center</span>
                             </label>
                             <label class="flex items-center gap-3 cursor-pointer group">
-                                <input checked="" class="rounded border-gray-300 text-primary focus:ring-primary"
-                                    type="checkbox" />
-                                <span
-                                    class="text-sm text-gray-600 dark:text-gray-300 group-hover:text-primary transition-colors">Private
-                                    Security</span>
+                                <input data-amenity="Private Security" class="rounded border-gray-300 text-primary focus:ring-primary" type="checkbox" />
+                                <span class="text-sm text-gray-600 dark:text-gray-300 group-hover:text-primary transition-colors">Private Security</span>
                             </label>
                             <label class="flex items-center gap-3 cursor-pointer group">
-                                <input class="rounded border-gray-300 text-primary focus:ring-primary"
-                                    type="checkbox" />
-                                <span
-                                    class="text-sm text-gray-600 dark:text-gray-300 group-hover:text-primary transition-colors">EV
-                                    Charging</span>
+                                <input data-amenity="EV Charging" class="rounded border-gray-300 text-primary focus:ring-primary" type="checkbox" />
+                                <span class="text-sm text-gray-600 dark:text-gray-300 group-hover:text-primary transition-colors">EV Charging</span>
+                            </label>
+                            <label class="flex items-center gap-3 cursor-pointer group">
+                                <input data-amenity="Central HVAC" class="rounded border-gray-300 text-primary focus:ring-primary" type="checkbox" />
+                                <span class="text-sm text-gray-600 dark:text-gray-300 group-hover:text-primary transition-colors">Central HVAC</span>
+                            </label>
+                            <label class="flex items-center gap-3 cursor-pointer group">
+                                <input data-amenity="Garage" class="rounded border-gray-300 text-primary focus:ring-primary" type="checkbox" />
+                                <span class="text-sm text-gray-600 dark:text-gray-300 group-hover:text-primary transition-colors">Garage</span>
+                            </label>
+                            <label class="flex items-center gap-3 cursor-pointer group">
+                                <input data-amenity="Wine Cellar" class="rounded border-gray-300 text-primary focus:ring-primary" type="checkbox" />
+                                <span class="text-sm text-gray-600 dark:text-gray-300 group-hover:text-primary transition-colors">Wine Cellar</span>
+                            </label>
+                            <label class="flex items-center gap-3 cursor-pointer group">
+                                <input data-amenity="Home Automation" class="rounded border-gray-300 text-primary focus:ring-primary" type="checkbox" />
+                                <span class="text-sm text-gray-600 dark:text-gray-300 group-hover:text-primary transition-colors">Home Automation</span>
+                            </label>
+                            <label class="flex items-center gap-3 cursor-pointer group">
+                                <input data-amenity="Garden" class="rounded border-gray-300 text-primary focus:ring-primary" type="checkbox" />
+                                <span class="text-sm text-gray-600 dark:text-gray-300 group-hover:text-primary transition-colors">Garden</span>
+                            </label>
+                            <label class="flex items-center gap-3 cursor-pointer group">
+                                <input data-amenity="Rooftop Terrace" class="rounded border-gray-300 text-primary focus:ring-primary" type="checkbox" />
+                                <span class="text-sm text-gray-600 dark:text-gray-300 group-hover:text-primary transition-colors">Rooftop Terrace</span>
+                            </label>
+                            <label class="flex items-center gap-3 cursor-pointer group">
+                                <input data-amenity="Elevator" class="rounded border-gray-300 text-primary focus:ring-primary" type="checkbox" />
+                                <span class="text-sm text-gray-600 dark:text-gray-300 group-hover:text-primary transition-colors">Elevator</span>
+                            </label>
+                            <label class="flex items-center gap-3 cursor-pointer group">
+                                <input data-amenity="Fireplace" class="rounded border-gray-300 text-primary focus:ring-primary" type="checkbox" />
+                                <span class="text-sm text-gray-600 dark:text-gray-300 group-hover:text-primary transition-colors">Fireplace</span>
+                            </label>
+                            <label class="flex items-center gap-3 cursor-pointer group">
+                                <input data-amenity="Walk-in Closet" class="rounded border-gray-300 text-primary focus:ring-primary" type="checkbox" />
+                                <span class="text-sm text-gray-600 dark:text-gray-300 group-hover:text-primary transition-colors">Walk-in Closet</span>
+                            </label>
+                            <label class="flex items-center gap-3 cursor-pointer group">
+                                <input data-amenity="Balcony" class="rounded border-gray-300 text-primary focus:ring-primary" type="checkbox" />
+                                <span class="text-sm text-gray-600 dark:text-gray-300 group-hover:text-primary transition-colors">Balcony</span>
+                            </label>
+                            <label class="flex items-center gap-3 cursor-pointer group">
+                                <input data-amenity="Laundry Room" class="rounded border-gray-300 text-primary focus:ring-primary" type="checkbox" />
+                                <span class="text-sm text-gray-600 dark:text-gray-300 group-hover:text-primary transition-colors">Laundry Room</span>
                             </label>
                         </div>
                     </div>
@@ -231,13 +276,6 @@
                         <p class="text-sm text-gray-500">Handpicked premium listings just for you</p>
                     </div>
                     <div class="flex items-center gap-4">
-                        <div
-                            class="flex bg-white dark:bg-white/5 border border-[#e2e4e9] dark:border-white/10 p-1 rounded-xl">
-                            <button class="p-1.5 rounded-lg bg-[#f1f1f4] dark:bg-white/10"><span
-                                    class="material-symbols-outlined text-[20px]">grid_view</span></button>
-                            <button class="p-1.5 rounded-lg"><span
-                                    class="material-symbols-outlined text-[20px]">view_list</span></button>
-                        </div>
                         <select
                             class="bg-white dark:bg-white/5 border border-[#e2e4e9] dark:border-white/10 rounded-xl px-4 py-2 text-sm font-medium focus:ring-primary/20 cursor-pointer">
                             <option>Sort by: Newest First</option>
@@ -522,7 +560,7 @@
                         </div>
                         <div>
                             <h4 class="font-bold text-lg">View on Map</h4>
-                            <p class="text-sm text-gray-500 max-w-[180px] mx-auto">Explore all 428 properties in our
+                            <p class="text-sm text-gray-500 max-w-[180px] mx-auto">Explore all properties in our
                                 interactive map view</p>
                         </div>
                         <button
@@ -532,13 +570,13 @@
                 </div>
                 <!-- Load More -->
                 <div class="mt-16 flex flex-col items-center gap-4">
-                    <p class="text-sm text-gray-500">Showing 6 of 428 properties</p>
+                    <p id="pagination-text" class="text-sm text-gray-500">Showing properties</p>
                     <div class="w-64 h-1.5 bg-[#f1f1f4] dark:bg-white/10 rounded-full overflow-hidden">
-                        <div class="h-full bg-primary w-[15%]"></div>
+                        <div id="pagination-progress" class="h-full bg-primary w-[15%]"></div>
                     </div>
-                    <button
+                    <button id="load-more-btn"
                         class="mt-4 px-10 py-3 border-2 border-[#e2e4e9] dark:border-white/10 rounded-xl font-bold hover:bg-white dark:hover:bg-white/5 transition-all active:scale-95">
-                        Load More Results
+                        View More
                     </button>
                 </div>
             </section>

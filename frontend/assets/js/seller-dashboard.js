@@ -1,4 +1,10 @@
 // Seller Dashboard Script
+const AVAILABLE_AMENITIES = [
+    'Swimming Pool', 'Fitness Center', 'Private Security', 'EV Charging', 'Central HVAC',
+    'Garage', 'Wine Cellar', 'Home Automation', 'Garden', 'Rooftop Terrace',
+    'Elevator', 'Fireplace', 'Walk-in Closet', 'Balcony', 'Laundry Room'
+];
+let selectedAmenities = [];
 document.addEventListener('DOMContentLoaded', async function () {
     // Auth guard - redirect if not authenticated or not a seller/agent
     const user = AuthService.getUser();
@@ -621,6 +627,15 @@ function showAddPropertyModal() {
                             class="w-full px-3 py-2 rounded-lg border focus:ring-2 focus:ring-primary text-sm" />
                         <p class="text-xs text-gray-500 mt-1">You can select multiple images</p>
                     </div>
+                    
+                    <div class="col-span-2">
+                        <label class="block text-sm font-semibold mb-1">Amenities</label>
+                        <select id="propAmenitiesDropdown"
+                            class="w-full px-3 py-2 rounded-lg border focus:ring-2 focus:ring-primary text-sm">
+                            <option value="">Select an amenity to add...</option>
+                        </select>
+                        <div id="selectedAmenitiesContainer" class="flex flex-wrap gap-2 mt-2"></div>
+                    </div>
                 </div>
                 
                 <div class="flex gap-3 pt-3 sticky bottom-0 bg-white dark:bg-gray-800 pb-2">
@@ -638,6 +653,40 @@ function showAddPropertyModal() {
     `;
 
     document.body.appendChild(modal);
+
+    // Populate amenities dropdown
+    selectedAmenities = [];
+    const amenityDropdown = document.getElementById('propAmenitiesDropdown');
+    AVAILABLE_AMENITIES.forEach(amenity => {
+        const opt = document.createElement('option');
+        opt.value = amenity;
+        opt.textContent = amenity;
+        amenityDropdown.appendChild(opt);
+    });
+
+    amenityDropdown.addEventListener('change', function () {
+        const amenity = this.value;
+        if (amenity && !selectedAmenities.includes(amenity)) {
+            selectedAmenities.push(amenity);
+            renderSelectedAmenities();
+        }
+        this.value = '';
+    });
+
+    function renderSelectedAmenities() {
+        const container = document.getElementById('selectedAmenitiesContainer');
+        container.innerHTML = selectedAmenities.map(amenity => `
+            <span class="inline-flex items-center gap-1 bg-primary/10 text-primary px-3 py-1 rounded-full text-xs font-bold">
+                ${amenity}
+                <button type="button" onclick="removeAmenity('${amenity}')" class="hover:text-red-500 transition-colors ml-1">&times;</button>
+            </span>
+        `).join('');
+    }
+
+    window.removeAmenity = function (amenity) {
+        selectedAmenities = selectedAmenities.filter(a => a !== amenity);
+        renderSelectedAmenities();
+    };
 
     document.getElementById('addPropertyForm').onsubmit = async function (e) {
         e.preventDefault();
@@ -664,6 +713,10 @@ function showAddPropertyModal() {
         for (let i = 0; i < images.length; i++) {
             formData.append('images', images[i]);
         }
+
+        selectedAmenities.forEach(amenity => {
+            formData.append('amenities[]', amenity);
+        });
 
         showLoader();
 

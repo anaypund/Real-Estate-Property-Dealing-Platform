@@ -150,21 +150,42 @@ function updateImages(images) {
     });
 }
 
+const AMENITY_ICONS = {
+    'Swimming Pool': 'pool',
+    'Fitness Center': 'fitness_center',
+    'Private Security': 'security',
+    'EV Charging': 'ev_station',
+    'Central HVAC': 'ac_unit',
+    'Garage': 'garage',
+    'Wine Cellar': 'wine_bar',
+    'Home Automation': 'home_iot_device',
+    'Garden': 'yard',
+    'Rooftop Terrace': 'deck',
+    'Elevator': 'elevator',
+    'Fireplace': 'fireplace',
+    'Walk-in Closet': 'checkroom',
+    'Balcony': 'balcony',
+    'Laundry Room': 'local_laundry_service'
+};
+
 function renderAmenities(amenities) {
     const amenitiesGrid = document.querySelector('.grid.grid-cols-1.md\\:grid-cols-3.gap-4');
     if (!amenitiesGrid) return;
 
-    amenitiesGrid.innerHTML = amenities.slice(0, 6).map(amenity => `
+    amenitiesGrid.innerHTML = amenities.slice(0, 6).map(amenity => {
+        const icon = AMENITY_ICONS[amenity] || 'check_circle';
+        return `
         <div class="p-5 bg-white dark:bg-white/5 border border-[#f1f1f4] dark:border-white/10 rounded-xl flex items-start gap-4 transition-transform hover:-translate-y-1">
             <div class="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center text-primary">
-                <span class="material-symbols-outlined">check_circle</span>
+                <span class="material-symbols-outlined">${icon}</span>
             </div>
             <div>
                 <p class="font-bold">${amenity}</p>
                 <p class="text-sm text-[#686b82]">Available</p>
             </div>
         </div>
-    `).join('');
+    `;
+    }).join('');
 }
 
 function renderSellerInfo(seller) {

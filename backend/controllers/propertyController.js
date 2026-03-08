@@ -76,6 +76,7 @@ exports.getProperties = async (req, res, next) => {
         res.status(200).json({
             success: true,
             count: properties.length,
+            total: count,
             totalPages: Math.ceil(count / limit),
             currentPage: page,
             data: properties
@@ -123,6 +124,14 @@ exports.createProperty = async (req, res, next) => {
         // Handle image uploads if present
         if (req.files && req.files.length > 0) {
             req.body.images = req.files.map(file => file.filename);
+        }
+
+        // Handle amenities from FormData (multer sends 'amenities[]' key)
+        if (req.body['amenities[]']) {
+            req.body.amenities = Array.isArray(req.body['amenities[]'])
+                ? req.body['amenities[]']
+                : [req.body['amenities[]']];
+            delete req.body['amenities[]'];
         }
 
         const property = await Property.create(req.body);

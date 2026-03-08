@@ -7,9 +7,13 @@ let currentFilters = {
     propertyType: '',
     amenities: [],
     page: 1,
-    limit: 6,
+    limit: 12,
     sort: '-createdAt'
 };
+
+let allLoadedProperties = [];
+let totalProperties = 0;
+let isAppending = false;
 
 document.addEventListener('DOMContentLoaded', async function () {
     // Get filters from URL if any
@@ -32,10 +36,14 @@ document.addEventListener('DOMContentLoaded', async function () {
     setupSearchHandler();
     setupFilterHandlers();
     setupSortHandler();
+    setupPriceRangeSlider();
+    updateFilterResultsText();
 });
 
 async function loadProperties() {
-    showLoader();
+    if (!isAppending) {
+        showLoader();
+    }
 
     try {
         const response = await PropertyService.getProperties(currentFilters);
@@ -43,17 +51,35 @@ async function loadProperties() {
         hideLoader();
 
         if (response.success && response.data) {
-            renderProperties(response.data);
+            totalProperties = response.total || 0;
+
+            if (isAppending) {
+                // Append mode: add new properties to existing list
+                allLoadedProperties = [...allLoadedProperties, ...response.data];
+                appendProperties(response.data);
+            } else {
+                // Fresh load: replace everything
+                allLoadedProperties = response.data;
+                renderProperties(response.data);
+            }
+
             updatePagination(response);
-            updateResultsCount(response.count, response.totalPages);
+            updatePaginationText();
+            updateFilterResultsText();
         } else {
-            renderEmptyState();
+            if (!isAppending) {
+                renderEmptyState();
+            }
         }
     } catch (error) {
         hideLoader();
         showToast(error.message || 'Failed to load properties', 'error');
-        renderEmptyState();
+        if (!isAppending) {
+            renderEmptyState();
+        }
     }
+
+    isAppending = false;
 }
 
 function renderProperties(properties) {
@@ -61,7 +87,7 @@ function renderProperties(properties) {
 
     if (!grid) return;
 
-    // Clear existing except the map card
+    // Save map card
     const mapCard = grid.querySelector('.relative.bg-primary\\/5');
     grid.innerHTML = '';
 
@@ -76,6 +102,25 @@ function renderProperties(properties) {
     });
 
     // Add back map card
+    if (mapCard) {
+        grid.appendChild(mapCard);
+    }
+}
+
+function appendProperties(properties) {
+    const grid = document.querySelector('.grid.grid-cols-1.md\\:grid-cols-2.xl\\:grid-cols-3');
+    if (!grid) return;
+
+    // Remove map card temporarily
+    const mapCard = grid.querySelector('.relative.bg-primary\\/5');
+    if (mapCard) mapCard.remove();
+
+    properties.forEach(property => {
+        const card = createPropertyCard(property);
+        grid.appendChild(card);
+    });
+
+    // Add back map card at the end
     if (mapCard) {
         grid.appendChild(mapCard);
     }
@@ -174,7 +219,9 @@ function setupSearchHandler() {
         const handleSearch = () => {
             const searchQuery = searchInput.value.trim();
             currentFilters.search = searchQuery || undefined;
-            currentFilters.page = 1; // Reset to first page
+            currentFilters.page = 1;
+            allLoadedProperties = [];
+            isAppending = false;
             loadProperties();
         };
 
@@ -189,10 +236,11 @@ function setupSearchHandler() {
 
 function setupFilterHandlers() {
     // Property type chips
-    document.querySelectorAll('.px-3.py-1\\.5.rounded-lg').forEach(chip => {
+    const typeChips = document.querySelectorAll('#propertyTypeChips > div');
+    typeChips.forEach(chip => {
         chip.addEventListener('click', function () {
             // Reset all chips
-            document.querySelectorAll('.px-3.py-1\\.5.rounded-lg').forEach(c => {
+            typeChips.forEach(c => {
                 c.classList.remove('bg-primary', 'text-white');
                 c.classList.add('bg-[#f1f1f4]', 'dark:bg-white/5');
             });
@@ -201,34 +249,31 @@ function setupFilterHandlers() {
             this.classList.add('bg-primary', 'text-white');
             this.classList.remove('bg-[#f1f1f4]', 'dark:bg-white/5');
 
-            currentFilters.propertyType = this.textContent.trim();
+            currentFilters.propertyType = this.dataset.type || '';
         });
     });
 
     // Bedrooms segmented control
-    document.querySelectorAll('.flex.bg-\\[\\#f1f1f4\\] button').forEach((btn, index) => {
+    const bedroomBtns = document.querySelectorAll('#bedroomFilter button');
+    bedroomBtns.forEach(btn => {
         btn.addEventListener('click', function () {
             // Reset all buttons
-            document.querySelectorAll('.flex.bg-\\[\\#f1f1f4\\] button').forEach(b => {
+            bedroomBtns.forEach(b => {
                 b.classList.remove('bg-white', 'dark:bg-white/10', 'shadow-sm');
             });
 
             // Activate clicked button
             this.classList.add('bg-white', 'dark:bg-white/10', 'shadow-sm');
 
-            const text = this.textContent.trim();
-            if (text === 'Any') {
-                currentFilters.bedrooms = '';
-            } else {
-                currentFilters.bedrooms = parseInt(text.replace('+', ''));
-            }
+            const beds = this.dataset.beds;
+            currentFilters.bedrooms = beds ? parseInt(beds) : '';
         });
     });
 
     // Amenities checkboxes
-    document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
+    document.querySelectorAll('#amenitiesFilter input[type="checkbox"]').forEach(checkbox => {
         checkbox.addEventListener('change', function () {
-            const amenity = this.nextElementSibling.textContent.trim();
+            const amenity = this.dataset.amenity;
             if (this.checked) {
                 if (!currentFilters.amenities.includes(amenity)) {
                     currentFilters.amenities.push(amenity);
@@ -243,7 +288,9 @@ function setupFilterHandlers() {
     const applyBtn = document.querySelector('button.w-full.bg-primary.text-white.py-3');
     if (applyBtn) {
         applyBtn.addEventListener('click', async () => {
-            currentFilters.page = 1; // Reset to first page
+            currentFilters.page = 1;
+            allLoadedProperties = [];
+            isAppending = false;
             await loadProperties();
         });
     }
@@ -252,10 +299,117 @@ function setupFilterHandlers() {
     const resetBtn = document.querySelector('button.text-xs.font-bold.text-primary');
     if (resetBtn) {
         resetBtn.addEventListener('click', () => {
-            currentFilters = { page: 1, limit: 6, sort: '-createdAt' };
-            location.reload();
+            currentFilters = { page: 1, limit: 12, sort: '-createdAt', amenities: [] };
+
+            // Reset UI controls
+            // Price sliders
+            const priceMin = document.getElementById('priceMin');
+            const priceMax = document.getElementById('priceMax');
+            if (priceMin) priceMin.value = 0;
+            if (priceMax) priceMax.value = 10000000;
+            updatePriceLabels();
+
+            // Reset property type chips
+            const typeChips = document.querySelectorAll('#propertyTypeChips > div');
+            typeChips.forEach(c => {
+                c.classList.remove('bg-primary', 'text-white');
+                c.classList.add('bg-[#f1f1f4]', 'dark:bg-white/5');
+            });
+            if (typeChips[0]) {
+                typeChips[0].classList.add('bg-primary', 'text-white');
+                typeChips[0].classList.remove('bg-[#f1f1f4]', 'dark:bg-white/5');
+            }
+
+            // Reset bedroom buttons
+            const bedroomBtns = document.querySelectorAll('#bedroomFilter button');
+            bedroomBtns.forEach(b => b.classList.remove('bg-white', 'dark:bg-white/10', 'shadow-sm'));
+            if (bedroomBtns[0]) bedroomBtns[0].classList.add('bg-white', 'dark:bg-white/10', 'shadow-sm');
+
+            // Reset amenities checkboxes
+            document.querySelectorAll('#amenitiesFilter input[type="checkbox"]').forEach(cb => cb.checked = false);
+
+            // Reset search
+            const searchInput = document.querySelector('input[placeholder*="Search"]') ||
+                document.querySelector('input[placeholder*="search"]');
+            if (searchInput) searchInput.value = '';
+            delete currentFilters.search;
+
+            allLoadedProperties = [];
+            isAppending = false;
+            loadProperties();
         });
     }
+
+    // Load More / View More button
+    const loadMoreBtn = document.getElementById('load-more-btn');
+    if (loadMoreBtn) {
+        loadMoreBtn.addEventListener('click', async () => {
+            currentFilters.page++;
+            isAppending = true;
+            await loadProperties();
+        });
+    }
+}
+
+function setupPriceRangeSlider() {
+    const minSlider = document.getElementById('priceMin');
+    const maxSlider = document.getElementById('priceMax');
+
+    if (!minSlider || !maxSlider) return;
+
+    const updateSliders = () => {
+        let min = parseInt(minSlider.value);
+        let max = parseInt(maxSlider.value);
+
+        // Prevent crossover
+        if (min > max) {
+            minSlider.value = max;
+            min = max;
+        }
+
+        // Update filter values
+        currentFilters.minPrice = min > 0 ? min : '';
+        currentFilters.maxPrice = max < 10000000 ? max : '';
+
+        updatePriceLabels();
+    };
+
+    minSlider.addEventListener('input', updateSliders);
+    maxSlider.addEventListener('input', updateSliders);
+}
+
+function updatePriceLabels() {
+    const minSlider = document.getElementById('priceMin');
+    const maxSlider = document.getElementById('priceMax');
+    const minLabel = document.getElementById('priceMinLabel');
+    const maxLabel = document.getElementById('priceMaxLabel');
+    const track = document.getElementById('priceRangeTrack');
+
+    if (!minSlider || !maxSlider || !minLabel || !maxLabel) return;
+
+    const min = parseInt(minSlider.value);
+    const max = parseInt(maxSlider.value);
+
+    minLabel.textContent = formatPriceShort(min);
+    maxLabel.textContent = formatPriceShort(max);
+
+    // Update track highlight
+    if (track) {
+        const totalRange = 10000000;
+        const leftPercent = (min / totalRange) * 100;
+        const rightPercent = 100 - (max / totalRange) * 100;
+        track.style.left = leftPercent + '%';
+        track.style.right = rightPercent + '%';
+    }
+}
+
+function formatPriceShort(value) {
+    if (value >= 1000000) {
+        return '$' + (value / 1000000).toFixed(value % 1000000 === 0 ? 0 : 1) + 'M';
+    } else if (value >= 1000) {
+        return '$' + (value / 1000).toFixed(0) + 'k';
+    }
+    return '$' + value;
 }
 
 function setupSortHandler() {
@@ -277,29 +431,51 @@ function setupSortHandler() {
                     currentFilters.sort = '-createdAt';
             }
             currentFilters.page = 1;
+            allLoadedProperties = [];
+            isAppending = false;
             await loadProperties();
         });
     }
 }
 
 function updatePagination(response) {
-    const loadMoreBtn = document.querySelector('.mt-4.px-10.py-3.border-2');
+    const loadMoreBtn = document.getElementById('load-more-btn');
+    if (!loadMoreBtn) return;
 
-    if (loadMoreBtn && response.currentPage < response.totalPages) {
+    const totalLoaded = allLoadedProperties.length;
+
+    if (totalLoaded < totalProperties) {
         loadMoreBtn.style.display = 'block';
-        loadMoreBtn.onclick = async () => {
-            currentFilters.page++;
-            await loadProperties();
-        };
-    } else if (loadMoreBtn) {
+    } else {
         loadMoreBtn.style.display = 'none';
     }
 }
 
-function updateResultsCount(count, totalPages) {
-    const countText = document.querySelector('.text-sm.text-gray-500');
-    if (countText) {
-        countText.textContent = `Showing ${count} properties`;
+function updatePaginationText() {
+    const paginationText = document.getElementById('pagination-text');
+    const progressBar = document.getElementById('pagination-progress');
+    const totalLoaded = allLoadedProperties.length;
+
+    if (paginationText) {
+        paginationText.textContent = `Showing ${totalLoaded} of ${totalProperties} properties`;
+    }
+
+    if (progressBar && totalProperties > 0) {
+        const percent = Math.min((totalLoaded / totalProperties) * 100, 100);
+        progressBar.style.width = percent + '%';
+    } else if (progressBar) {
+        progressBar.style.width = '0%';
+    }
+}
+
+function updateFilterResultsText() {
+    const resultsText = document.getElementById('filter-results-text');
+    if (!resultsText) return;
+
+    if (currentFilters.search) {
+        resultsText.textContent = `Showing properties for "${currentFilters.search}"`;
+    } else {
+        resultsText.textContent = `Showing all properties`;
     }
 }
 
@@ -314,4 +490,14 @@ function renderEmptyState() {
             <p class="text-gray-500 text-sm">Try adjusting your filters or search criteria</p>
         </div>
     `;
+
+    // Hide pagination
+    const loadMoreBtn = document.getElementById('load-more-btn');
+    if (loadMoreBtn) loadMoreBtn.style.display = 'none';
+
+    const paginationText = document.getElementById('pagination-text');
+    if (paginationText) paginationText.textContent = 'No properties found';
+
+    const progressBar = document.getElementById('pagination-progress');
+    if (progressBar) progressBar.style.width = '0%';
 }
