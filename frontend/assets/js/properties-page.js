@@ -128,8 +128,10 @@ function appendProperties(properties) {
 
 function createPropertyCard(property) {
     const card = document.createElement('div');
-    card.className = 'group bg-white dark:bg-white/5 rounded-2xl overflow-hidden border border-[#e2e4e9] dark:border-white/10 hover:shadow-2xl hover:shadow-primary/5 transition-all duration-300';
-    card.style.cursor = 'pointer';
+    const isSold = property.status === 'sold';
+    card.className = 'group bg-white dark:bg-white/5 rounded-2xl overflow-hidden border border-[#e2e4e9] dark:border-white/10 hover:shadow-2xl hover:shadow-primary/5 transition-all duration-300' + (isSold ? ' relative' : '');
+    card.style.cursor = isSold ? 'default' : 'pointer';
+    if (isSold) card.style.filter = 'grayscale(100%)';
 
     const imageUrl = property.images && property.images.length > 0
         ? getImageUrl(property.images[0])
@@ -141,20 +143,30 @@ function createPropertyCard(property) {
             <span class="text-[10px] font-bold uppercase tracking-widest">New Listing</span>
         </div>` : '';
 
+    const soldStamp = isSold ? `
+        <div class="absolute inset-0 flex items-center justify-center z-10 pointer-events-none">
+            <div class="bg-red-600/90 text-white px-6 py-2 text-2xl font-black uppercase tracking-widest -rotate-12 shadow-2xl rounded-sm border-4 border-white/30">
+                Sold Out
+            </div>
+        </div>` : '';
+
+    const clickHandler = isSold ? '' : `onclick="window.location.href='property-details.html?id=${property._id}'"`;
+
     card.innerHTML = `
-        <div class="relative aspect-[4/3] overflow-hidden" onclick="window.location.href='property-details.html?id=${property._id}'">
+        ${soldStamp}
+        <div class="relative aspect-[4/3] overflow-hidden" ${clickHandler}>
             <div class="absolute inset-0 bg-cover bg-center group-hover:scale-110 transition-transform duration-700" 
                 style="background-image: url('${imageUrl}');"></div>
             ${statusBadge}
-            <button class="absolute top-4 right-4 size-9 rounded-full bg-white/20 hover:bg-white/40 backdrop-blur-md flex items-center justify-center text-white transition-all" 
+            ${!isSold ? `<button class="absolute top-4 right-4 size-9 rounded-full bg-white/20 hover:bg-white/40 backdrop-blur-md flex items-center justify-center text-white transition-all" 
                 onclick="event.stopPropagation(); handleFavoriteToggle('${property._id}', this)">
                 <span class="material-symbols-outlined text-[20px]">favorite</span>
-            </button>
+            </button>` : ''}
             <div class="absolute bottom-4 left-4 bg-primary text-white px-4 py-1.5 rounded-xl font-bold text-lg shadow-xl">
                 ${formatPrice(property.price)}
             </div>
         </div>
-        <div class="p-5 space-y-3" onclick="window.location.href='property-details.html?id=${property._id}'">
+        <div class="p-5 space-y-3" ${clickHandler}>
             <div>
                 <h3 class="font-bold text-lg leading-tight group-hover:text-primary transition-colors">${property.title || 'Untitled Property'}</h3>
                 <div class="flex items-center gap-1 text-gray-500 text-xs mt-1">

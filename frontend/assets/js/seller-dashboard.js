@@ -5,6 +5,9 @@ const AVAILABLE_AMENITIES = [
     'Elevator', 'Fireplace', 'Walk-in Closet', 'Balcony', 'Laundry Room'
 ];
 let selectedAmenities = [];
+let allSellerProperties = [];
+let listingsPage = 1;
+const listingsPerPage = 3;
 document.addEventListener('DOMContentLoaded', async function () {
     // Auth guard - redirect if not authenticated or not a seller/agent
     const user = AuthService.getUser();
@@ -220,29 +223,35 @@ async function loadMyListings() {
 
         const response = await PropertyService.getProperties({
             seller: user.id,
-            limit: 10
+            limit: 100
         });
 
-        console.log('Properties response:', response);
-
         if (response.success && response.data && response.data.length > 0) {
-            renderMyListings(response.data);
+            allSellerProperties = response.data;
+            listingsPage = 1;
+            renderMyListings();
         } else {
+            allSellerProperties = [];
             renderEmptyListings();
         }
     } catch (error) {
         console.error('Failed to load listings:', error);
+        allSellerProperties = [];
         renderEmptyListings();
     }
 }
 
-function renderMyListings(properties) {
+function renderMyListings() {
     const tbody = document.querySelector('tbody.divide-y');
     if (!tbody) return;
 
+    const start = (listingsPage - 1) * listingsPerPage;
+    const end = start + listingsPerPage;
+    const pageProperties = allSellerProperties.slice(start, end);
+
     // Fetch lead counts for all properties
-    fetchLeadCounts(properties).then(leadCounts => {
-        tbody.innerHTML = properties.slice(0, 3).map(property => {
+    fetchLeadCounts(allSellerProperties).then(leadCounts => {
+        tbody.innerHTML = pageProperties.map(property => {
             const imageUrl = property.images && property.images.length > 0
                 ? getImageUrl(property.images[0])
                 : 'https://via.placeholder.com/60x60?text=No+Image';
@@ -251,6 +260,7 @@ function renderMyListings(properties) {
                 property.status === 'pending' ? 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400' :
                     'bg-gray-100 text-gray-700 dark:bg-zinc-800 dark:text-zinc-400';
 
+            const statusLabel = property.status === 'sold' ? 'Sold Out' : property.status.charAt(0).toUpperCase() + property.status.slice(1);
             const leadCount = leadCounts[property._id] || 0;
 
             return `
@@ -269,7 +279,7 @@ function renderMyListings(properties) {
                         <span class="text-[#121317] dark:text-white font-bold text-sm">${formatPrice(property.price)}</span>
                     </td>
                     <td class="px-6 py-5 text-center">
-                        <span class="${statusClass} px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wide">${property.status}</span>
+                        <button onclick="showStatusMenu('${property._id}', this)" class="${statusClass} px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wide cursor-pointer hover:opacity-80 transition-opacity">${statusLabel}</button>
                     </td>
                     <td class="px-6 py-5 text-center">
                         <span class="text-[#121317] dark:text-white text-sm">${property.views || 0}</span>
@@ -292,8 +302,37 @@ function renderMyListings(properties) {
                 </tr>
             `;
         }).join('');
+
+        updateListingsPagination();
     });
 }
+
+function updateListingsPagination() {
+    const total = allSellerProperties.length;
+    const totalPages = Math.ceil(total / listingsPerPage);
+    const start = (listingsPage - 1) * listingsPerPage + 1;
+    const end = Math.min(listingsPage * listingsPerPage, total);
+
+    const textEl = document.getElementById('listings-pagination-text');
+    if (textEl) {
+        textEl.textContent = total > 0 ? `Showing ${start}-${end} of ${total} properties` : 'No properties';
+    }
+
+    const prevBtn = document.getElementById('listings-prev-btn');
+    const nextBtn = document.getElementById('listings-next-btn');
+    if (prevBtn) prevBtn.disabled = listingsPage <= 1;
+    if (nextBtn) nextBtn.disabled = listingsPage >= totalPages;
+}
+
+function changeListingsPage(direction) {
+    const totalPages = Math.ceil(allSellerProperties.length / listingsPerPage);
+    const newPage = listingsPage + direction;
+    if (newPage >= 1 && newPage <= totalPages) {
+        listingsPage = newPage;
+        renderMyListings();
+    }
+}
+window.changeListingsPage = changeListingsPage;
 
 async function fetchLeadCounts(properties) {
     try {
@@ -736,14 +775,298 @@ function showAddPropertyModal() {
 }
 
 async function editProperty(propertyId) {
-    showToast('Edit functionality coming soon!', 'info');
+    showLoader();
+    try {
+        const response = await PropertyService.getProperty(propertyId);
+        hideLoader();
+        if (response.success && response.data) {
+            showEditPropertyModal(response.data);
+        } else {
+            showToast('Failed to load property data', 'error');
+        }
+    } catch (error) {
+        hideLoader();
+        showToast(error.message || 'Failed to load property', 'error');
+    }
 }
+
+function showEditPropertyModal(property) {
+    const modal = document.createElement('div');
+    modal.className = 'fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4';
+    modal.innerHTML = `
+        <div class="bg-white dark:bg-gray-800 rounded-2xl p-6 max-w-2xl w-full shadow-2xl max-h-[90vh] overflow-y-auto">
+            <h2 class="text-2xl font-bold mb-4 sticky top-0 bg-white dark:bg-gray-800 pb-2">Edit Property</h2>
+            <form id="editPropertyForm" class="space-y-3" enctype="multipart/form-data">
+                <div class="grid grid-cols-2 gap-3">
+                    <div class="col-span-2">
+                        <label class="block text-sm font-semibold mb-1">Property Title</label>
+                        <input type="text" id="editPropTitle" required
+                            class="w-full px-3 py-2 rounded-lg border focus:ring-2 focus:ring-primary" 
+                            value="${property.title || ''}" />
+                    </div>
+                    
+                    <div class="col-span-2">
+                        <label class="block text-sm font-semibold mb-1">Description</label>
+                        <textarea id="editPropDescription" rows="2" required
+                            class="w-full px-3 py-2 rounded-lg border focus:ring-2 focus:ring-primary">${property.description || ''}</textarea>
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-semibold mb-1">Price ($)</label>
+                        <input type="number" id="editPropPrice" required min="0"
+                            class="w-full px-3 py-2 rounded-lg border focus:ring-2 focus:ring-primary" 
+                            value="${property.price || ''}" />
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-semibold mb-1">Property Type</label>
+                        <select id="editPropType" required
+                            class="w-full px-3 py-2 rounded-lg border focus:ring-2 focus:ring-primary">
+                            <option value="house" ${property.propertyType === 'house' ? 'selected' : ''}>House</option>
+                            <option value="apartment" ${property.propertyType === 'apartment' ? 'selected' : ''}>Apartment</option>
+                            <option value="condo" ${property.propertyType === 'condo' ? 'selected' : ''}>Condo</option>
+                            <option value="villa" ${property.propertyType === 'villa' ? 'selected' : ''}>Villa</option>
+                            <option value="townhouse" ${property.propertyType === 'townhouse' ? 'selected' : ''}>Townhouse</option>
+                        </select>
+                    </div>
+                    
+                    <div class="col-span-2">
+                        <label class="block text-sm font-semibold mb-1">Address</label>
+                        <input type="text" id="editPropAddress" required
+                            class="w-full px-3 py-2 rounded-lg border focus:ring-2 focus:ring-primary" 
+                            value="${property.location?.address || ''}" />
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-semibold mb-1">City</label>
+                        <input type="text" id="editPropCity" required
+                            class="w-full px-3 py-2 rounded-lg border focus:ring-2 focus:ring-primary" 
+                            value="${property.location?.city || ''}" />
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-semibold mb-1">State</label>
+                        <input type="text" id="editPropState" required
+                            class="w-full px-3 py-2 rounded-lg border focus:ring-2 focus:ring-primary" 
+                            value="${property.location?.state || ''}" />
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-semibold mb-1">Zip Code (Optional)</label>
+                        <input type="text" id="editPropZip"
+                            class="w-full px-3 py-2 rounded-lg border focus:ring-2 focus:ring-primary" 
+                            value="${property.location?.zipCode || ''}" />
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-semibold mb-1">Bedrooms</label>
+                        <input type="number" id="editPropBedrooms" required min="0"
+                            class="w-full px-3 py-2 rounded-lg border focus:ring-2 focus:ring-primary" 
+                            value="${property.bedrooms || ''}" />
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-semibold mb-1">Bathrooms</label>
+                        <input type="number" id="editPropBathrooms" required min="0" step="0.5"
+                            class="w-full px-3 py-2 rounded-lg border focus:ring-2 focus:ring-primary" 
+                            value="${property.bathrooms || ''}" />
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-semibold mb-1">Square Feet</label>
+                        <input type="number" id="editPropSqft" required min="0"
+                            class="w-full px-3 py-2 rounded-lg border focus:ring-2 focus:ring-primary" 
+                            value="${property.sqft || ''}" />
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-semibold mb-1">Year Built (Optional)</label>
+                        <input type="number" id="editPropYear" min="1800" max="2025"
+                            class="w-full px-3 py-2 rounded-lg border focus:ring-2 focus:ring-primary" 
+                            value="${property.yearBuilt || ''}" />
+                    </div>
+                    
+                    <div class="col-span-2">
+                        <label class="block text-sm font-semibold mb-1">Add More Images (Optional)</label>
+                        <input type="file" id="editPropImages" multiple accept="image/*"
+                            class="w-full px-3 py-2 rounded-lg border focus:ring-2 focus:ring-primary text-sm" />
+                        <p class="text-xs text-gray-500 mt-1">New images will be added to existing ones</p>
+                    </div>
+                    
+                    <div class="col-span-2">
+                        <label class="block text-sm font-semibold mb-1">Amenities</label>
+                        <select id="editPropAmenitiesDropdown"
+                            class="w-full px-3 py-2 rounded-lg border focus:ring-2 focus:ring-primary text-sm">
+                            <option value="">Select an amenity to add...</option>
+                        </select>
+                        <div id="editSelectedAmenitiesContainer" class="flex flex-wrap gap-2 mt-2"></div>
+                    </div>
+                </div>
+                
+                <div class="flex gap-3 pt-3 sticky bottom-0 bg-white dark:bg-gray-800 pb-2">
+                    <button type="button" onclick="this.closest('.fixed').remove()"
+                        class="flex-1 px-4 py-2 border border-gray-300 rounded-lg font-bold hover:bg-gray-50">
+                        Cancel
+                    </button>
+                    <button type="submit"
+                        class="flex-1 px-4 py-2 bg-primary text-white rounded-lg font-bold hover:opacity-90">
+                        Save Changes
+                    </button>
+                </div>
+            </form>
+        </div>
+    `;
+
+    document.body.appendChild(modal);
+
+    // Populate amenities dropdown and pre-select existing amenities
+    selectedAmenities = property.amenities ? [...property.amenities] : [];
+    const amenityDropdown = document.getElementById('editPropAmenitiesDropdown');
+    AVAILABLE_AMENITIES.forEach(amenity => {
+        const opt = document.createElement('option');
+        opt.value = amenity;
+        opt.textContent = amenity;
+        amenityDropdown.appendChild(opt);
+    });
+
+    function renderEditSelectedAmenities() {
+        const container = document.getElementById('editSelectedAmenitiesContainer');
+        container.innerHTML = selectedAmenities.map(amenity => `
+            <span class="inline-flex items-center gap-1 bg-primary/10 text-primary px-3 py-1 rounded-full text-xs font-bold">
+                ${amenity}
+                <button type="button" onclick="removeEditAmenity('${amenity}')" class="hover:text-red-500 transition-colors ml-1">&times;</button>
+            </span>
+        `).join('');
+    }
+
+    // Render existing amenities
+    renderEditSelectedAmenities();
+
+    amenityDropdown.addEventListener('change', function () {
+        const amenity = this.value;
+        if (amenity && !selectedAmenities.includes(amenity)) {
+            selectedAmenities.push(amenity);
+            renderEditSelectedAmenities();
+        }
+        this.value = '';
+    });
+
+    window.removeEditAmenity = function (amenity) {
+        selectedAmenities = selectedAmenities.filter(a => a !== amenity);
+        renderEditSelectedAmenities();
+    };
+
+    document.getElementById('editPropertyForm').onsubmit = async function (e) {
+        e.preventDefault();
+
+        const formData = new FormData();
+        formData.append('title', document.getElementById('editPropTitle').value);
+        formData.append('description', document.getElementById('editPropDescription').value);
+        formData.append('price', document.getElementById('editPropPrice').value);
+        formData.append('propertyType', document.getElementById('editPropType').value);
+        formData.append('location[address]', document.getElementById('editPropAddress').value);
+        formData.append('location[city]', document.getElementById('editPropCity').value);
+        formData.append('location[state]', document.getElementById('editPropState').value);
+        formData.append('bedrooms', document.getElementById('editPropBedrooms').value);
+        formData.append('bathrooms', document.getElementById('editPropBathrooms').value);
+        formData.append('sqft', document.getElementById('editPropSqft').value);
+
+        const zip = document.getElementById('editPropZip').value;
+        if (zip) formData.append('location[zipCode]', zip);
+
+        const year = document.getElementById('editPropYear').value;
+        if (year) formData.append('yearBuilt', year);
+
+        const images = document.getElementById('editPropImages').files;
+        for (let i = 0; i < images.length; i++) {
+            formData.append('images', images[i]);
+        }
+
+        selectedAmenities.forEach(amenity => {
+            formData.append('amenities[]', amenity);
+        });
+
+        showLoader();
+
+        try {
+            await PropertyService.updateProperty(property._id, formData);
+            hideLoader();
+            showToast('Property updated successfully!', 'success');
+            modal.remove();
+            await loadMyListings();
+        } catch (error) {
+            hideLoader();
+            showToast(error.message || 'Failed to update property', 'error');
+        }
+    };
+}
+
+function showStatusMenu(propertyId, buttonEl) {
+    // Remove any existing status menu
+    document.querySelectorAll('.status-dropdown-menu').forEach(el => el.remove());
+
+    const property = allSellerProperties.find(p => p._id === propertyId);
+    if (!property) return;
+
+    const menu = document.createElement('div');
+    menu.className = 'status-dropdown-menu absolute bg-white dark:bg-gray-800 rounded-xl shadow-2xl border border-[#dddee4] dark:border-zinc-700 p-2 z-50 min-w-[160px]';
+    
+    const statuses = [
+        { value: 'active', label: 'Active', icon: 'check_circle', color: 'text-green-600' },
+        { value: 'pending', label: 'Pending', icon: 'schedule', color: 'text-amber-600' },
+        { value: 'sold', label: 'Sold Out', icon: 'sell', color: 'text-gray-600' }
+    ];
+
+    menu.innerHTML = statuses.map(s => `
+        <button onclick="updatePropertyStatus('${propertyId}', '${s.value}')" 
+            class="w-full px-3 py-2 rounded-lg text-left flex items-center gap-2 text-sm font-medium hover:bg-gray-100 dark:hover:bg-zinc-700 transition-colors ${property.status === s.value ? 'bg-gray-100 dark:bg-zinc-700' : ''}">
+            <span class="material-symbols-outlined text-base ${s.color}">${s.icon}</span>
+            ${s.label}
+            ${property.status === s.value ? '<span class="material-symbols-outlined text-base text-primary ml-auto">check</span>' : ''}
+        </button>
+    `).join('');
+
+    // Position near the button
+    const rect = buttonEl.getBoundingClientRect();
+    menu.style.position = 'fixed';
+    menu.style.top = (rect.bottom + 4) + 'px';
+    menu.style.left = (rect.left - 60) + 'px';
+
+    document.body.appendChild(menu);
+
+    // Close on outside click
+    setTimeout(() => {
+        document.addEventListener('click', function closeMenu(e) {
+            if (!menu.contains(e.target) && e.target !== buttonEl) {
+                menu.remove();
+                document.removeEventListener('click', closeMenu);
+            }
+        });
+    }, 10);
+}
+window.showStatusMenu = showStatusMenu;
+
+async function updatePropertyStatus(propertyId, newStatus) {
+    try {
+        await PropertyService.updateProperty(propertyId, { status: newStatus });
+        showToast(`Status updated to ${newStatus === 'sold' ? 'Sold Out' : newStatus.charAt(0).toUpperCase() + newStatus.slice(1)}`, 'success');
+        
+        // Close status menu
+        document.querySelectorAll('.status-dropdown-menu').forEach(el => el.remove());
+        
+        // Reload listings
+        await loadMyListings();
+    } catch (error) {
+        showToast(error.message || 'Failed to update status', 'error');
+    }
+}
+window.updatePropertyStatus = updatePropertyStatus;
 
 function showPropertyMenu(propertyId) {
     const menu = document.createElement('div');
     menu.className = 'fixed inset-0 bg-black/20 flex items-center justify-center z-50';
     menu.innerHTML = `
-        <div class="bg-white dark:bg-gray-800 rounded-xl p-4 shadow-xl">
+        <div class="bg-white dark:bg-gray-800 rounded-xl p-4 shadow-xl min-w-[220px]">
             <button onclick="deleteProperty('${propertyId}')" 
                 class="w-full px-6 py-3 text-red-600 hover:bg-red-50 rounded-lg font-bold text-left flex items-center gap-2">
                 <span class="material-symbols-outlined">delete</span>

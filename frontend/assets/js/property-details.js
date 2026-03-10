@@ -116,6 +116,49 @@ function renderPropertyDetails(property) {
 
     // Update favorite button
     updateFavoriteButton(property._id);
+
+    // Handle sold-out status
+    if (property.status === 'sold') {
+        applySoldOutStyling();
+    }
+}
+
+function applySoldOutStyling() {
+    // Add sold-out banner after the title
+    const titleElement = document.querySelector('h1');
+    if (titleElement) {
+        const banner = document.createElement('div');
+        banner.className = 'bg-red-600 text-white px-6 py-3 rounded-xl flex items-center gap-3 mt-4';
+        banner.innerHTML = `
+            <span class="material-symbols-outlined text-2xl">sell</span>
+            <div>
+                <p class="font-black text-lg uppercase tracking-wider">Sold Out</p>
+                <p class="text-white/80 text-sm">This property is no longer available</p>
+            </div>
+        `;
+        titleElement.parentElement.insertBefore(banner, titleElement.nextSibling);
+    }
+
+    // Greyscale the image gallery
+    const imageGrid = document.querySelector('.grid.grid-cols-1.md\\:grid-cols-4');
+    if (imageGrid) {
+        imageGrid.style.filter = 'grayscale(100%)';
+    }
+
+    // Disable all action buttons in the right sidebar
+    const allButtons = document.querySelectorAll('button');
+    allButtons.forEach(btn => {
+        const icon = btn.querySelector('.material-symbols-outlined');
+        if (icon) {
+            const iconText = icon.textContent.trim();
+            if (['favorite', 'event_available', 'mail', 'share'].includes(iconText)) {
+                btn.disabled = true;
+                btn.style.opacity = '0.5';
+                btn.style.cursor = 'not-allowed';
+                btn.onclick = null;
+            }
+        }
+    });
 }
 
 function updateSpec(label, value) {

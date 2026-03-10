@@ -56,7 +56,7 @@ exports.getProperties = async (req, res, next) => {
         if (propertyType) query.propertyType = propertyType;
         if (seller) query.seller = seller; // Filter by seller ID
         if (status) query.status = status;
-        else if (!seller) query.status = 'active'; // Default to active properties only if not filtering by seller
+        else if (!seller) query.status = { $in: ['active', 'sold'] }; // Show active + sold (greyscale), hide pending
 
         if (amenities) {
             const amenitiesArray = amenities.split(',');
@@ -171,6 +171,14 @@ exports.updateProperty = async (req, res, next) => {
         if (req.files && req.files.length > 0) {
             const newImages = req.files.map(file => file.filename);
             req.body.images = [...property.images, ...newImages];
+        }
+
+        // Handle amenities from FormData (multer sends 'amenities[]' key)
+        if (req.body['amenities[]']) {
+            req.body.amenities = Array.isArray(req.body['amenities[]'])
+                ? req.body['amenities[]']
+                : [req.body['amenities[]']];
+            delete req.body['amenities[]'];
         }
 
         property = await Property.findByIdAndUpdate(req.params.id, req.body, {
