@@ -42,6 +42,7 @@ app.use('/api/auth', require('./routes/auth'));
 app.use('/api/properties', require('./routes/properties'));
 app.use('/api/buyers', require('./routes/buyers'));
 app.use('/api/sellers', require('./routes/sellers'));
+app.use('/api/admin', require('./routes/admin'));
 
 // Welcome route
 app.get('/', (req, res) => {

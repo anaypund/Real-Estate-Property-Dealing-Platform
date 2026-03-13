@@ -67,6 +67,20 @@ function setupSearchHandler() {
 }
 
 function renderPropertyDetails(property) {
+    // Update breadcrumbs
+    const breadcrumbs = document.getElementById('property-breadcrumbs');
+    if (breadcrumbs) {
+        breadcrumbs.innerHTML = `
+            <a class="text-[#686b82] hover:text-primary transition-colors" href="properties.html">Properties</a>
+            <span class="text-[#686b82]/40">/</span>
+            <a class="text-[#686b82] hover:text-primary transition-colors" href="properties.html?search=${encodeURIComponent(property.location.state || '')}">${property.location.state || 'State'}</a>
+            <span class="text-[#686b82]/40">/</span>
+            <a class="text-[#686b82] hover:text-primary transition-colors" href="properties.html?search=${encodeURIComponent(property.location.city || '')}">${property.location.city || 'City'}</a>
+            <span class="text-[#686b82]/40">/</span>
+            <span class="font-semibold text-primary dark:text-white">${property.title}</span>
+        `;
+    }
+
     // Update title and location
     const titleElement = document.querySelector('h1');
     if (titleElement) {
@@ -112,6 +126,19 @@ function renderPropertyDetails(property) {
     // Update seller info
     if (property.seller) {
         renderSellerInfo(property.seller);
+    }
+
+    // Update Map iframe
+    const mapIframe = document.getElementById('property-map-iframe');
+    if (mapIframe && property.location) {
+        const addressParts = [
+            property.location.address,
+            property.location.city,
+            property.location.state,
+            property.location.zipCode
+        ].filter(Boolean).join(', ');
+        
+        mapIframe.src = `https://maps.google.com/maps?q=${encodeURIComponent(addressParts)}&output=embed`;
     }
 
     // Update favorite button

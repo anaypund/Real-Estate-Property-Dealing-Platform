@@ -9,8 +9,7 @@
     <link
         href="https://fonts.googleapis.com/css2?family=Epilogue:wght@300;400;500;600;700;800;900&family=Manrope:wght@300;400;500;600;700&display=swap"
         rel="stylesheet" />
-    <link
-        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
         rel="stylesheet" />
     <script id="tailwind-config">
         tailwind.config = {
@@ -78,7 +77,6 @@
                         class="w-full px-4 py-3 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-primary focus:border-transparent transition-all">
                         <option value="buyer">Buyer</option>
                         <option value="seller">Seller</option>
-                        <option value="agent">Agent</option>
                     </select>
                 </div>
 
@@ -145,19 +143,39 @@
                 const userData = { name, email, password, role };
                 if (phone) userData.phone = phone;
 
-                const response = await AuthService.register(userData);
+                const response = await API.post('/auth/register', userData);
 
                 hideLoader();
-                showToast('Registration successful!', 'success');
 
-                // Redirect based on role
-                setTimeout(() => {
-                    if (role === 'seller' || role === 'agent') {
-                        window.location.href = 'seller-dashboard.html';
-                    } else {
-                        window.location.href = 'buyer-dashboard.html';
-                    }
-                }, 1000);
+                if (response.pendingApproval) {
+                    // Show "account under review" card — no redirect, no token
+                    const formWrapper = document.querySelector('.bg-white');
+                    formWrapper.innerHTML = `
+                        <div class="flex flex-col items-center text-center py-4">
+                            <div class="size-20 bg-amber-50 dark:bg-amber-900/20 rounded-full flex items-center justify-center mb-5">
+                                <span class="material-symbols-outlined text-amber-500 text-5xl">pending_actions</span>
+                            </div>
+                            <h2 class="text-2xl font-display font-black text-slate-900 dark:text-white mb-2">Account Under Review</h2>
+                            <p class="text-slate-600 dark:text-slate-400 text-sm leading-relaxed mb-2">
+                                Thank you for signing up, <strong>${name}</strong>!
+                            </p>
+                            <p class="text-slate-500 dark:text-slate-400 text-sm leading-relaxed mb-6">
+                                Your account is currently under review by our admin team. You will be notified once your account is approved and you can sign in.
+                            </p>
+                            <div class="bg-amber-50 dark:bg-amber-900/10 border border-amber-200 dark:border-amber-800 rounded-xl p-4 text-left w-full mb-6">
+                                <p class="text-amber-700 dark:text-amber-400 text-xs font-semibold uppercase tracking-wide mb-1">Account Details</p>
+                                <p class="text-slate-700 dark:text-slate-300 text-sm"><span class="font-bold">Name:</span> ${name}</p>
+                                <p class="text-slate-700 dark:text-slate-300 text-sm"><span class="font-bold">Email:</span> ${email}</p>
+                                <p class="text-slate-700 dark:text-slate-300 text-sm"><span class="font-bold">Role:</span> ${role.charAt(0).toUpperCase() + role.slice(1)}</p>
+                            </div>
+                            <a href="login.html" class="w-full bg-primary text-white font-bold py-3 rounded-lg hover:opacity-90 transition-all text-center block">
+                                Back to Login
+                            </a>
+                        </div>
+                    `;
+                } else {
+                    showToast('Registration failed. Please try again.', 'error');
+                }
             } catch (error) {
                 hideLoader();
                 showToast(error.message || 'Registration failed', 'error');

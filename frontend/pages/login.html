@@ -87,12 +87,51 @@
         </div>
     </div>
 
+    <!-- Account Pending/Rejected Popup -->
+    <div id="pending-popup" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/50 backdrop-blur-sm p-4">
+        <div class="bg-white dark:bg-slate-900 rounded-2xl shadow-2xl w-full max-w-md p-8 border border-slate-200 dark:border-slate-700 text-center">
+            <div id="popup-icon" class="size-20 bg-amber-50 dark:bg-amber-900/20 rounded-full flex items-center justify-center mx-auto mb-5">
+                <span class="material-symbols-outlined text-amber-500 text-5xl">pending_actions</span>
+            </div>
+            <h3 id="popup-title" class="text-2xl font-display font-black text-slate-900 dark:text-white mb-3">Account Under Review</h3>
+            <p id="popup-message" class="text-slate-500 dark:text-slate-400 text-sm leading-relaxed mb-6">
+                Your account is still under review. Please wait for admin approval before signing in.
+            </p>
+            <button onclick="document.getElementById('pending-popup').classList.add('hidden'); document.getElementById('pending-popup').classList.remove('flex');"
+                class="w-full bg-primary text-white font-bold py-3 rounded-lg hover:opacity-90 transition-all">
+                OK, Got It
+            </button>
+        </div>
+    </div>
+
     <!-- Scripts -->
     <script src="../assets/js/api.js"></script>
     <script src="../assets/js/utils.js"></script>
     <script src="../assets/js/auth.js"></script>
     <script>
         const loginForm = document.getElementById('loginForm');
+
+        function showPendingPopup(type) {
+            const popup = document.getElementById('pending-popup');
+            const icon = document.getElementById('popup-icon');
+            const title = document.getElementById('popup-title');
+            const message = document.getElementById('popup-message');
+
+            if (type === 'rejected') {
+                icon.className = 'size-20 bg-red-50 dark:bg-red-900/20 rounded-full flex items-center justify-center mx-auto mb-5';
+                icon.innerHTML = '<span class="material-symbols-outlined text-red-500 text-5xl">cancel</span>';
+                title.textContent = 'Account Not Approved';
+                message.textContent = 'Your account request was not approved by the admin. Please contact support for more information.';
+            } else {
+                icon.className = 'size-20 bg-amber-50 dark:bg-amber-900/20 rounded-full flex items-center justify-center mx-auto mb-5';
+                icon.innerHTML = '<span class="material-symbols-outlined text-amber-500 text-5xl">pending_actions</span>';
+                title.textContent = 'Account Under Review';
+                message.textContent = 'Your account is still under admin review. You will be notified once it is approved. Please check back later.';
+            }
+
+            popup.classList.remove('hidden');
+            popup.classList.add('flex');
+        }
 
         loginForm.addEventListener('submit', async (e) => {
             e.preventDefault();
@@ -124,10 +163,18 @@
                 }, 1000);
             } catch (error) {
                 hideLoader();
-                showToast(error.message || 'Login failed', 'error');
+                // Check for specific account status errors
+                const errMsg = error.message || '';
+                if (errMsg === 'account_pending' || errMsg.includes('account_pending')) {
+                    showPendingPopup('pending');
+                } else if (errMsg === 'account_rejected' || errMsg.includes('account_rejected')) {
+                    showPendingPopup('rejected');
+                } else {
+                    showToast(error.message || 'Login failed', 'error');
+                }
             }
         });
     </script>
 </body>
 
-</html>
+</html>

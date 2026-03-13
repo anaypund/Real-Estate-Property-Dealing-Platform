@@ -26,7 +26,7 @@ const UserSchema = new mongoose.Schema({
     },
     role: {
         type: String,
-        enum: ['buyer', 'seller', 'agent'],
+        enum: ['buyer', 'seller', 'agent', 'admin'],
         default: 'buyer'
     },
     phone: {
@@ -36,6 +36,19 @@ const UserSchema = new mongoose.Schema({
     profilePicture: {
         type: String,
         default: 'default-avatar.png'
+    },
+    isApproved: {
+        type: Boolean,
+        default: false
+    },
+    isAdmin: {
+        type: Boolean,
+        default: false
+    },
+    status: {
+        type: String,
+        enum: ['pending', 'approved', 'rejected'],
+        default: 'pending'
     },
     createdAt: {
         type: Date,

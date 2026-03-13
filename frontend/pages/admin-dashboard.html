@@ -1,0 +1,665 @@
+<!DOCTYPE html>
+<html class="light" lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Admin Dashboard | EstateMaster</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Epilogue:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#252e7e",
+                        "background-light": "#f6f6f8",
+                        "background-dark": "#13151f",
+                    },
+                    fontFamily: {
+                        "display": ["Epilogue", "sans-serif"]
+                    },
+                    borderRadius: { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" },
+                },
+            },
+        }
+    </script>
+    <style>
+        body { font-family: 'Epilogue', sans-serif; }
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+        .sidebar-active { background-color: #eef0fb; color: #252e7e; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+        .fade-in { animation: fadeIn 0.3s ease forwards; }
+    </style>
+</head>
+
+<body class="bg-background-light dark:bg-background-dark min-h-screen">
+
+    <!-- Toast container -->
+    <div id="toast-container" class="fixed top-6 right-6 z-50 flex flex-col gap-3"></div>
+
+    <!-- User Detail Modal -->
+    <div id="user-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/50 backdrop-blur-sm p-4" onclick="closeModal(event)">
+        <div class="bg-white dark:bg-zinc-900 rounded-2xl shadow-2xl w-full max-w-lg border border-slate-200 dark:border-zinc-700 overflow-hidden" onclick="event.stopPropagation()">
+            <div class="flex items-center justify-between px-6 py-4 border-b border-slate-200 dark:border-zinc-700">
+                <h3 class="text-lg font-black text-slate-900 dark:text-white">User Details</h3>
+                <button onclick="document.getElementById('user-modal').classList.add('hidden'); document.getElementById('user-modal').classList.remove('flex');" class="text-slate-400 hover:text-slate-600 dark:hover:text-white transition-colors">
+                    <span class="material-symbols-outlined">close</span>
+                </button>
+            </div>
+            <div id="modal-body" class="p-6">
+                <!-- Filled by JS -->
+            </div>
+            <div id="modal-actions" class="px-6 py-4 bg-slate-50 dark:bg-zinc-800 border-t border-slate-200 dark:border-zinc-700 flex gap-3 justify-end">
+                <!-- Filled by JS -->
+            </div>
+        </div>
+    </div>
+
+    <div class="flex h-full min-h-screen">
+        <!-- Sidebar -->
+        <aside class="w-64 flex-shrink-0 bg-white dark:bg-zinc-900 border-r border-[#dddee4] dark:border-zinc-800 flex flex-col justify-between p-6 sticky top-0 h-screen">
+            <div class="flex flex-col gap-8">
+                <a href="index.html" class="flex items-center gap-3 no-underline">
+                    <div class="bg-primary size-10 rounded-lg flex items-center justify-center text-white">
+                        <span class="material-symbols-outlined">apartment</span>
+                    </div>
+                    <div>
+                        <h1 class="text-[#121317] dark:text-white text-base font-bold leading-tight">EstateMaster</h1>
+                        <p class="text-[#686b82] text-xs font-normal">Admin Control Panel</p>
+                    </div>
+                </a>
+
+                <nav class="flex flex-col gap-2">
+                    <button data-tab="dashboard"
+                        class="tab-btn sidebar-active flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors text-left w-full">
+                        <span class="material-symbols-outlined">dashboard</span>
+                        <span class="text-sm font-medium">Dashboard</span>
+                    </button>
+                    <button data-tab="signup-requests"
+                        class="tab-btn flex items-center gap-3 px-3 py-2.5 rounded-lg text-[#686b82] hover:bg-background-light dark:hover:bg-zinc-800 transition-colors text-left w-full">
+                        <span class="material-symbols-outlined">person_add</span>
+                        <span class="text-sm font-medium">Signup Requests</span>
+                        <span id="pending-badge" class="ml-auto bg-primary text-white text-[10px] px-1.5 py-0.5 rounded-full font-bold hidden">0</span>
+                    </button>
+                    <button data-tab="all-users"
+                        class="tab-btn flex items-center gap-3 px-3 py-2.5 rounded-lg text-[#686b82] hover:bg-background-light dark:hover:bg-zinc-800 transition-colors text-left w-full">
+                        <span class="material-symbols-outlined">group</span>
+                        <span class="text-sm font-medium">All Users</span>
+                    </button>
+                </nav>
+            </div>
+
+            <div class="flex flex-col gap-3">
+                <div class="bg-background-light dark:bg-zinc-800 p-4 rounded-xl">
+                    <div class="flex items-center gap-2 mb-2">
+                        <div class="size-8 bg-primary rounded-lg flex items-center justify-center">
+                            <span class="material-symbols-outlined text-white text-base">admin_panel_settings</span>
+                        </div>
+                        <div>
+                            <p class="text-[#121317] dark:text-white text-xs font-bold">Administrator</p>
+                            <p class="text-[#686b82] text-[10px]">Full Access</p>
+                        </div>
+                    </div>
+                </div>
+                <button onclick="adminLogout()" class="flex items-center gap-2 px-3 py-2.5 rounded-lg text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors text-sm font-semibold w-full">
+                    <span class="material-symbols-outlined">logout</span>
+                    Logout
+                </button>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="flex-1 flex flex-col overflow-y-auto">
+            <!-- Top Header -->
+            <header class="h-16 border-b border-[#dddee4] dark:border-zinc-800 bg-white dark:bg-zinc-900 px-8 flex items-center justify-between sticky top-0 z-10">
+                <div class="flex items-center gap-2 text-[#686b82] text-sm font-medium">
+                    <span class="material-symbols-outlined text-base">admin_panel_settings</span>
+                    <span id="breadcrumb" class="text-[#121317] dark:text-white font-semibold">Dashboard Overview</span>
+                </div>
+                <div class="flex items-center gap-3">
+                    <span class="bg-primary/10 text-primary text-xs px-3 py-1.5 rounded-full font-bold flex items-center gap-1">
+                        <span class="material-symbols-outlined text-sm">shield</span>
+                        Admin
+                    </span>
+                </div>
+            </header>
+
+            <!-- Page Content -->
+            <div class="p-8 max-w-7xl mx-auto w-full">
+
+                <!-- DASHBOARD TAB -->
+                <div id="tab-dashboard" class="tab-content active fade-in">
+                    <div class="flex flex-col gap-1 mb-8">
+                        <h2 class="text-[#121317] dark:text-white text-3xl font-black tracking-tight">Platform Overview</h2>
+                        <p class="text-[#686b82] text-base">Monitor all buyers, sellers, and pending signup requests.</p>
+                    </div>
+
+                    <!-- Stats Grid -->
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
+                        <div class="bg-white dark:bg-zinc-900 border border-[#dddee4] dark:border-zinc-800 p-6 rounded-xl flex flex-col gap-4">
+                            <div class="size-10 bg-blue-50 dark:bg-blue-900/20 text-blue-600 rounded-lg flex items-center justify-center">
+                                <span class="material-symbols-outlined">shopping_bag</span>
+                            </div>
+                            <div>
+                                <p class="text-[#686b82] text-sm font-medium">Total Buyers</p>
+                                <p id="stat-buyers" class="text-[#121317] dark:text-white text-3xl font-black">—</p>
+                            </div>
+                        </div>
+                        <div class="bg-white dark:bg-zinc-900 border border-[#dddee4] dark:border-zinc-800 p-6 rounded-xl flex flex-col gap-4">
+                            <div class="size-10 bg-purple-50 dark:bg-purple-900/20 text-purple-600 rounded-lg flex items-center justify-center">
+                                <span class="material-symbols-outlined">storefront</span>
+                            </div>
+                            <div>
+                                <p class="text-[#686b82] text-sm font-medium">Total Sellers</p>
+                                <p id="stat-sellers" class="text-[#121317] dark:text-white text-3xl font-black">—</p>
+                            </div>
+                        </div>
+                        <div class="bg-white dark:bg-zinc-900 border border-[#dddee4] dark:border-zinc-800 p-6 rounded-xl flex flex-col gap-4">
+                            <div class="size-10 bg-amber-50 dark:bg-amber-900/20 text-amber-600 rounded-lg flex items-center justify-center">
+                                <span class="material-symbols-outlined">pending_actions</span>
+                            </div>
+                            <div>
+                                <p class="text-[#686b82] text-sm font-medium">Pending Approvals</p>
+                                <p id="stat-pending" class="text-[#121317] dark:text-white text-3xl font-black">—</p>
+                            </div>
+                        </div>
+                        <div class="bg-white dark:bg-zinc-900 border border-[#dddee4] dark:border-zinc-800 p-6 rounded-xl flex flex-col gap-4">
+                            <div class="size-10 bg-green-50 dark:bg-green-900/20 text-green-600 rounded-lg flex items-center justify-center">
+                                <span class="material-symbols-outlined">verified_user</span>
+                            </div>
+                            <div>
+                                <p class="text-[#686b82] text-sm font-medium">Approved Users</p>
+                                <p id="stat-approved" class="text-[#121317] dark:text-white text-3xl font-black">—</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Quick actions -->
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                        <div class="bg-primary text-white p-8 rounded-xl relative overflow-hidden flex flex-col justify-between">
+                            <div class="z-10">
+                                <h4 class="text-xl font-black mb-2 leading-tight">Review Pending Signups</h4>
+                                <p class="text-white/80 text-sm mb-6">New buyer and seller accounts are waiting for your approval before they can access the platform.</p>
+                                <button onclick="switchTab('signup-requests')" class="bg-white text-primary px-5 py-2.5 rounded-lg font-bold text-sm hover:shadow-xl transition-all">
+                                    View Requests →
+                                </button>
+                            </div>
+                            <span class="material-symbols-outlined absolute -bottom-8 -right-8 text-white/10 text-[180px] select-none">how_to_reg</span>
+                        </div>
+                        <div class="bg-white dark:bg-zinc-900 border border-[#dddee4] dark:border-zinc-800 p-8 rounded-xl">
+                            <h4 class="text-[#121317] dark:text-white text-lg font-black mb-4">User Breakdown</h4>
+                            <div class="space-y-4">
+                                <div>
+                                    <div class="flex justify-between text-sm mb-1">
+                                        <span class="text-[#686b82]">Buyers</span>
+                                        <span id="bar-buyers-label" class="font-bold text-[#121317] dark:text-white">0</span>
+                                    </div>
+                                    <div class="h-2 bg-background-light dark:bg-zinc-800 rounded-full overflow-hidden">
+                                        <div id="bar-buyers" class="h-full bg-blue-500 rounded-full transition-all duration-700" style="width:0%"></div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div class="flex justify-between text-sm mb-1">
+                                        <span class="text-[#686b82]">Sellers / Agents</span>
+                                        <span id="bar-sellers-label" class="font-bold text-[#121317] dark:text-white">0</span>
+                                    </div>
+                                    <div class="h-2 bg-background-light dark:bg-zinc-800 rounded-full overflow-hidden">
+                                        <div id="bar-sellers" class="h-full bg-purple-500 rounded-full transition-all duration-700" style="width:0%"></div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div class="flex justify-between text-sm mb-1">
+                                        <span class="text-[#686b82]">Pending</span>
+                                        <span id="bar-pending-label" class="font-bold text-[#121317] dark:text-white">0</span>
+                                    </div>
+                                    <div class="h-2 bg-background-light dark:bg-zinc-800 rounded-full overflow-hidden">
+                                        <div id="bar-pending" class="h-full bg-amber-500 rounded-full transition-all duration-700" style="width:0%"></div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div class="flex justify-between text-sm mb-1">
+                                        <span class="text-[#686b82]">Rejected</span>
+                                        <span id="bar-rejected-label" class="font-bold text-[#121317] dark:text-white">0</span>
+                                    </div>
+                                    <div class="h-2 bg-background-light dark:bg-zinc-800 rounded-full overflow-hidden">
+                                        <div id="bar-rejected" class="h-full bg-red-400 rounded-full transition-all duration-700" style="width:0%"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SIGNUP REQUESTS TAB -->
+                <div id="tab-signup-requests" class="tab-content fade-in">
+                    <div class="flex flex-wrap justify-between items-end gap-4 mb-8">
+                        <div>
+                            <h2 class="text-[#121317] dark:text-white text-3xl font-black tracking-tight">Signup Requests</h2>
+                            <p class="text-[#686b82] text-base">Review and approve or reject new account registrations.</p>
+                        </div>
+                        <button onclick="loadSignupRequests()" class="flex items-center gap-2 px-4 py-2.5 border border-[#dddee4] dark:border-zinc-700 rounded-xl text-[#686b82] hover:bg-white dark:hover:bg-zinc-800 text-sm font-semibold transition-all">
+                            <span class="material-symbols-outlined text-base">refresh</span>
+                            Refresh
+                        </button>
+                    </div>
+
+                    <div class="bg-white dark:bg-zinc-900 border border-[#dddee4] dark:border-zinc-800 rounded-xl overflow-hidden shadow-sm">
+                        <div class="px-6 py-4 border-b border-[#dddee4] dark:border-zinc-800 flex items-center justify-between">
+                            <h3 class="text-[#121317] dark:text-white font-bold flex items-center gap-2">
+                                <span class="material-symbols-outlined text-amber-500">pending_actions</span>
+                                Pending Approvals
+                            </h3>
+                            <span id="requests-count" class="bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400 px-3 py-1 rounded-full text-xs font-bold">0 pending</span>
+                        </div>
+                        <div id="requests-loading" class="flex flex-col items-center justify-center py-16 gap-3">
+                            <div class="size-10 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
+                            <p class="text-[#686b82] text-sm">Loading requests...</p>
+                        </div>
+                        <div id="requests-empty" class="hidden flex-col items-center justify-center py-16 gap-3 text-center">
+                            <div class="size-16 bg-green-50 dark:bg-green-900/20 text-green-500 rounded-2xl flex items-center justify-center mb-2">
+                                <span class="material-symbols-outlined text-4xl">check_circle</span>
+                            </div>
+                            <p class="text-[#121317] dark:text-white font-bold text-lg">All caught up!</p>
+                            <p class="text-[#686b82] text-sm max-w-xs">No pending signup requests at the moment. New registrations will appear here.</p>
+                        </div>
+                        <div class="overflow-x-auto">
+                            <table id="requests-table" class="w-full text-left border-collapse hidden">
+                                <thead>
+                                    <tr class="bg-background-light/50 dark:bg-zinc-800/50">
+                                        <th class="px-6 py-4 text-xs font-bold text-[#686b82] uppercase tracking-wider">User</th>
+                                        <th class="px-6 py-4 text-xs font-bold text-[#686b82] uppercase tracking-wider">Role</th>
+                                        <th class="px-6 py-4 text-xs font-bold text-[#686b82] uppercase tracking-wider">Phone</th>
+                                        <th class="px-6 py-4 text-xs font-bold text-[#686b82] uppercase tracking-wider">Registered</th>
+                                        <th class="px-6 py-4 text-xs font-bold text-[#686b82] uppercase tracking-wider text-right">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="requests-tbody" class="divide-y divide-[#dddee4] dark:divide-zinc-800">
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ALL USERS TAB -->
+                <div id="tab-all-users" class="tab-content fade-in">
+                    <div class="flex flex-wrap justify-between items-end gap-4 mb-8">
+                        <div>
+                            <h2 class="text-[#121317] dark:text-white text-3xl font-black tracking-tight">All Users</h2>
+                            <p class="text-[#686b82] text-base">Complete list of all registered users and their status.</p>
+                        </div>
+                        <button onclick="loadAllUsers()" class="flex items-center gap-2 px-4 py-2.5 border border-[#dddee4] dark:border-zinc-700 rounded-xl text-[#686b82] hover:bg-white dark:hover:bg-zinc-800 text-sm font-semibold transition-all">
+                            <span class="material-symbols-outlined text-base">refresh</span>
+                            Refresh
+                        </button>
+                    </div>
+                    <div class="bg-white dark:bg-zinc-900 border border-[#dddee4] dark:border-zinc-800 rounded-xl overflow-hidden shadow-sm">
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left border-collapse">
+                                <thead>
+                                    <tr class="bg-background-light/50 dark:bg-zinc-800/50">
+                                        <th class="px-6 py-4 text-xs font-bold text-[#686b82] uppercase tracking-wider">User</th>
+                                        <th class="px-6 py-4 text-xs font-bold text-[#686b82] uppercase tracking-wider">Role</th>
+                                        <th class="px-6 py-4 text-xs font-bold text-[#686b82] uppercase tracking-wider">Status</th>
+                                        <th class="px-6 py-4 text-xs font-bold text-[#686b82] uppercase tracking-wider">Registered</th>
+                                        <th class="px-6 py-4 text-xs font-bold text-[#686b82] uppercase tracking-wider text-right">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="users-tbody" class="divide-y divide-[#dddee4] dark:divide-zinc-800">
+                                    <tr><td colspan="5" class="px-6 py-16 text-center text-[#686b82]">
+                                        <div class="flex flex-col items-center gap-3">
+                                            <div class="size-10 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
+                                            <span class="text-sm">Loading users...</span>
+                                        </div>
+                                    </td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </main>
+    </div>
+
+    <script>
+        const API_BASE_URL = 'http://localhost:5000/api';
+
+        // Auth guard
+        const adminToken = localStorage.getItem('adminToken');
+        if (!adminToken) { window.location.href = 'admin-login.html'; }
+
+        function authHeaders() {
+            return { 'Content-Type': 'application/json', 'Authorization': `Bearer ${adminToken}` };
+        }
+
+        // Toast
+        function showToast(message, type = 'info') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            const colors = { success: 'bg-green-500', error: 'bg-red-500', info: 'bg-blue-500', warning: 'bg-amber-500' };
+            const icons = { success: 'check_circle', error: 'error', info: 'info', warning: 'warning' };
+            toast.className = `${colors[type] || colors.info} text-white px-5 py-3 rounded-xl shadow-xl text-sm font-semibold flex items-center gap-2 opacity-0 translate-y-2 transition-all duration-300`;
+            toast.innerHTML = `<span class="material-symbols-outlined text-base">${icons[type]}</span>${message}`;
+            container.appendChild(toast);
+            requestAnimationFrame(() => { toast.classList.remove('opacity-0', 'translate-y-2'); });
+            setTimeout(() => { toast.classList.add('opacity-0', 'translate-y-2'); setTimeout(() => toast.remove(), 300); }, 4000);
+        }
+
+        // Tab switching
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(t => { t.classList.remove('active'); });
+            document.querySelectorAll('.tab-btn').forEach(b => {
+                b.classList.remove('sidebar-active');
+                b.classList.add('text-[#686b82]', 'hover:bg-background-light', 'dark:hover:bg-zinc-800');
+            });
+            const tab = document.getElementById('tab-' + tabId);
+            if (tab) { tab.classList.add('active'); tab.classList.add('fade-in'); }
+            const btn = document.querySelector(`[data-tab="${tabId}"]`);
+            if (btn) {
+                btn.classList.add('sidebar-active');
+                btn.classList.remove('text-[#686b82]', 'hover:bg-background-light', 'dark:hover:bg-zinc-800');
+            }
+            const breadcrumbs = { dashboard: 'Dashboard Overview', 'signup-requests': 'Signup Requests', 'all-users': 'All Users' };
+            document.getElementById('breadcrumb').textContent = breadcrumbs[tabId] || tabId;
+
+            if (tabId === 'signup-requests') loadSignupRequests();
+            if (tabId === 'all-users') loadAllUsers();
+        }
+
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.addEventListener('click', () => switchTab(btn.dataset.tab));
+        });
+
+        // Load stats
+        async function loadStats() {
+            try {
+                const res = await fetch(`${API_BASE_URL}/admin/stats`, { headers: authHeaders() });
+                const data = await res.json();
+                if (!data.success) { showToast('Failed to load stats', 'error'); return; }
+                const d = data.data;
+                document.getElementById('stat-buyers').textContent = d.totalBuyers;
+                document.getElementById('stat-sellers').textContent = d.totalSellers;
+                document.getElementById('stat-pending').textContent = d.pendingRequests;
+                document.getElementById('stat-approved').textContent = d.approvedUsers;
+
+                // Badge
+                if (d.pendingRequests > 0) {
+                    const badge = document.getElementById('pending-badge');
+                    badge.textContent = d.pendingRequests;
+                    badge.classList.remove('hidden');
+                }
+
+                // Progress bars
+                const total = (d.totalUsers || 1);
+                document.getElementById('bar-buyers').style.width = `${Math.min((d.totalBuyers / total) * 100, 100)}%`;
+                document.getElementById('bar-sellers').style.width = `${Math.min((d.totalSellers / total) * 100, 100)}%`;
+                document.getElementById('bar-pending').style.width = `${Math.min((d.pendingRequests / total) * 100, 100)}%`;
+                document.getElementById('bar-rejected').style.width = `${Math.min((d.rejectedUsers / total) * 100, 100)}%`;
+                document.getElementById('bar-buyers-label').textContent = d.totalBuyers;
+                document.getElementById('bar-sellers-label').textContent = d.totalSellers;
+                document.getElementById('bar-pending-label').textContent = d.pendingRequests;
+                document.getElementById('bar-rejected-label').textContent = d.rejectedUsers;
+            } catch (e) { showToast('Server error loading stats', 'error'); }
+        }
+
+        // Format date
+        function formatDate(dateStr) {
+            const d = new Date(dateStr);
+            return d.toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' });
+        }
+
+        function roleChip(role) {
+            const map = {
+                buyer: 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400',
+                seller: 'bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400',
+                agent: 'bg-indigo-100 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-400',
+            };
+            return `<span class="${map[role] || 'bg-gray-100 text-gray-700'} px-3 py-1 rounded-full text-[10px] font-bold uppercase">${role}</span>`;
+        }
+
+        function statusChip(status) {
+            const map = {
+                pending: 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400',
+                approved: 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400',
+                rejected: 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400',
+            };
+            return `<span class="${map[status] || 'bg-gray-100 text-gray-700'} px-3 py-1 rounded-full text-[10px] font-bold uppercase">${status}</span>`;
+        }
+
+        function initials(name) {
+            return (name || 'U').split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
+        }
+
+        // Load signup requests
+        async function loadSignupRequests() {
+            const loading = document.getElementById('requests-loading');
+            const empty = document.getElementById('requests-empty');
+            const table = document.getElementById('requests-table');
+            const tbody = document.getElementById('requests-tbody');
+
+            loading.classList.remove('hidden'); loading.classList.add('flex');
+            empty.classList.add('hidden'); empty.classList.remove('flex');
+            table.classList.add('hidden');
+            tbody.innerHTML = '';
+
+            try {
+                const res = await fetch(`${API_BASE_URL}/admin/signup-requests`, { headers: authHeaders() });
+                const data = await res.json();
+
+                loading.classList.add('hidden'); loading.classList.remove('flex');
+
+                if (!data.success) { showToast('Failed to load requests', 'error'); return; }
+
+                const users = data.data;
+                document.getElementById('requests-count').textContent = `${users.length} pending`;
+
+                if (users.length === 0) {
+                    empty.classList.remove('hidden'); empty.classList.add('flex');
+                    return;
+                }
+
+                table.classList.remove('hidden');
+                tbody.innerHTML = users.map(u => `
+                    <tr class="hover:bg-background-light/30 dark:hover:bg-zinc-800/30 transition-colors" id="row-${u._id}">
+                        <td class="px-6 py-5">
+                            <div class="flex items-center gap-3">
+                                <div class="size-10 rounded-full bg-primary/10 text-primary flex items-center justify-center font-bold text-sm flex-shrink-0">${initials(u.name)}</div>
+                                <div>
+                                    <p class="text-[#121317] dark:text-white font-bold text-sm">${u.name}</p>
+                                    <p class="text-[#686b82] text-xs">${u.email}</p>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="px-6 py-5">${roleChip(u.role)}</td>
+                        <td class="px-6 py-5 text-[#686b82] text-sm">${u.phone || '—'}</td>
+                        <td class="px-6 py-5 text-[#686b82] text-sm">${formatDate(u.createdAt)}</td>
+                        <td class="px-6 py-5 text-right">
+                            <div class="flex items-center justify-end gap-2">
+                                <button onclick="viewUser('${u._id}')" class="p-2 hover:bg-background-light dark:hover:bg-zinc-800 rounded-lg text-[#686b82] hover:text-primary transition-all" title="View Details">
+                                    <span class="material-symbols-outlined text-lg">info</span>
+                                </button>
+                                <button onclick="approveUser('${u._id}', '${u.name}')" class="flex items-center gap-1.5 bg-green-500 hover:bg-green-600 text-white px-3 py-1.5 rounded-lg text-xs font-bold transition-all">
+                                    <span class="material-symbols-outlined text-sm">check_circle</span>
+                                    Accept
+                                </button>
+                                <button onclick="rejectUser('${u._id}', '${u.name}')" class="flex items-center gap-1.5 bg-red-500 hover:bg-red-600 text-white px-3 py-1.5 rounded-lg text-xs font-bold transition-all">
+                                    <span class="material-symbols-outlined text-sm">cancel</span>
+                                    Reject
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                `).join('');
+            } catch (e) {
+                loading.classList.add('hidden');
+                showToast('Server error', 'error');
+            }
+        }
+
+        // Load all users
+        async function loadAllUsers() {
+            const tbody = document.getElementById('users-tbody');
+            tbody.innerHTML = `<tr><td colspan="5" class="px-6 py-16 text-center"><div class="flex flex-col items-center gap-3"><div class="size-10 border-4 border-primary border-t-transparent rounded-full animate-spin"></div><span class="text-sm text-[#686b82]">Loading users...</span></div></td></tr>`;
+
+            try {
+                const res = await fetch(`${API_BASE_URL}/admin/users`, { headers: authHeaders() });
+                const data = await res.json();
+                if (!data.success) { showToast('Failed to load users', 'error'); return; }
+
+                const users = data.data;
+                if (users.length === 0) {
+                    tbody.innerHTML = `<tr><td colspan="5" class="px-6 py-16 text-center text-[#686b82] text-sm">No users found.</td></tr>`;
+                    return;
+                }
+
+                tbody.innerHTML = users.map(u => `
+                    <tr class="hover:bg-background-light/30 dark:hover:bg-zinc-800/30 transition-colors">
+                        <td class="px-6 py-5">
+                            <div class="flex items-center gap-3">
+                                <div class="size-9 rounded-full bg-primary/10 text-primary flex items-center justify-center font-bold text-xs flex-shrink-0">${initials(u.name)}</div>
+                                <div>
+                                    <p class="text-[#121317] dark:text-white font-bold text-sm">${u.name}</p>
+                                    <p class="text-[#686b82] text-xs">${u.email}</p>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="px-6 py-5">${roleChip(u.role)}</td>
+                        <td class="px-6 py-5">${statusChip(u.status)}</td>
+                        <td class="px-6 py-5 text-[#686b82] text-sm">${formatDate(u.createdAt)}</td>
+                        <td class="px-6 py-5 text-right">
+                            <div class="flex items-center justify-end gap-2">
+                                <button onclick="viewUser('${u._id}')" class="p-2 hover:bg-background-light dark:hover:bg-zinc-800 rounded-lg text-[#686b82] hover:text-primary transition-all" title="View Details">
+                                    <span class="material-symbols-outlined text-lg">info</span>
+                                </button>
+                                ${u.status === 'pending' ? `
+                                <button onclick="approveUser('${u._id}', '${u.name}')" class="flex items-center gap-1 bg-green-500 hover:bg-green-600 text-white px-3 py-1.5 rounded-lg text-xs font-bold transition-all">
+                                    <span class="material-symbols-outlined text-sm">check</span>Approve
+                                </button>
+                                <button onclick="rejectUser('${u._id}', '${u.name}')" class="flex items-center gap-1 bg-red-500 hover:bg-red-600 text-white px-3 py-1.5 rounded-lg text-xs font-bold transition-all">
+                                    <span class="material-symbols-outlined text-sm">close</span>Reject
+                                </button>` : ''}
+                            </div>
+                        </td>
+                    </tr>
+                `).join('');
+            } catch (e) { showToast('Server error', 'error'); }
+        }
+
+        // View user detail modal
+        async function viewUser(userId) {
+            const modal = document.getElementById('user-modal');
+            const body = document.getElementById('modal-body');
+            const actions = document.getElementById('modal-actions');
+
+            body.innerHTML = `<div class="flex justify-center py-8"><div class="size-10 border-4 border-primary border-t-transparent rounded-full animate-spin"></div></div>`;
+            actions.innerHTML = '';
+            modal.classList.remove('hidden'); modal.classList.add('flex');
+
+            try {
+                const res = await fetch(`${API_BASE_URL}/admin/users/${userId}`, { headers: authHeaders() });
+                const data = await res.json();
+
+                if (!data.success) { body.innerHTML = '<p class="text-red-500 text-center py-8">Failed to load user data.</p>'; return; }
+
+                const u = data.data;
+                body.innerHTML = `
+                    <div class="flex items-center gap-4 mb-6">
+                        <div class="size-16 rounded-2xl bg-primary/10 text-primary flex items-center justify-center font-black text-xl">${initials(u.name)}</div>
+                        <div>
+                            <h4 class="text-[#121317] dark:text-white text-xl font-black">${u.name}</h4>
+                            <p class="text-[#686b82] text-sm">${u.email}</p>
+                            <div class="flex items-center gap-2 mt-1">${roleChip(u.role)} ${statusChip(u.status)}</div>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="bg-background-light dark:bg-zinc-800 rounded-xl p-4">
+                            <p class="text-[#686b82] text-xs font-semibold uppercase tracking-wide mb-1">Phone</p>
+                            <p class="text-[#121317] dark:text-white font-bold text-sm">${u.phone || '—'}</p>
+                        </div>
+                        <div class="bg-background-light dark:bg-zinc-800 rounded-xl p-4">
+                            <p class="text-[#686b82] text-xs font-semibold uppercase tracking-wide mb-1">Registered</p>
+                            <p class="text-[#121317] dark:text-white font-bold text-sm">${formatDate(u.createdAt)}</p>
+                        </div>
+                        <div class="bg-background-light dark:bg-zinc-800 rounded-xl p-4">
+                            <p class="text-[#686b82] text-xs font-semibold uppercase tracking-wide mb-1">User ID</p>
+                            <p class="text-[#686b82] text-xs font-mono break-all">${u._id}</p>
+                        </div>
+                        <div class="bg-background-light dark:bg-zinc-800 rounded-xl p-4">
+                            <p class="text-[#686b82] text-xs font-semibold uppercase tracking-wide mb-1">Approved Login</p>
+                            <p class="text-[#121317] dark:text-white font-bold text-sm">${u.isApproved ? '✅ Yes' : '❌ No'}</p>
+                        </div>
+                    </div>
+                `;
+
+                if (u.status === 'pending') {
+                    actions.innerHTML = `
+                        <button onclick="approveUser('${u._id}', '${u.name}'); document.getElementById('user-modal').classList.add('hidden'); document.getElementById('user-modal').classList.remove('flex');"
+                            class="flex items-center gap-2 bg-green-500 hover:bg-green-600 text-white px-5 py-2.5 rounded-xl text-sm font-bold transition-all">
+                            <span class="material-symbols-outlined text-base">check_circle</span>Accept
+                        </button>
+                        <button onclick="rejectUser('${u._id}', '${u.name}'); document.getElementById('user-modal').classList.add('hidden'); document.getElementById('user-modal').classList.remove('flex');"
+                            class="flex items-center gap-2 bg-red-500 hover:bg-red-600 text-white px-5 py-2.5 rounded-xl text-sm font-bold transition-all">
+                            <span class="material-symbols-outlined text-base">cancel</span>Reject
+                        </button>
+                    `;
+                } else {
+                    actions.innerHTML = `<button onclick="document.getElementById('user-modal').classList.add('hidden'); document.getElementById('user-modal').classList.remove('flex');" class="border border-[#dddee4] dark:border-zinc-700 text-[#686b82] px-5 py-2.5 rounded-xl text-sm font-bold">Close</button>`;
+                }
+            } catch (e) { body.innerHTML = '<p class="text-red-500 text-center py-8">Server error.</p>'; }
+        }
+
+        function closeModal(e) {
+            document.getElementById('user-modal').classList.add('hidden');
+            document.getElementById('user-modal').classList.remove('flex');
+        }
+
+        // Approve user
+        async function approveUser(userId, userName) {
+            try {
+                const res = await fetch(`${API_BASE_URL}/admin/approve/${userId}`, { method: 'PUT', headers: authHeaders() });
+                const data = await res.json();
+                if (data.success) {
+                    showToast(`${userName} has been approved! ✅`, 'success');
+                    const row = document.getElementById(`row-${userId}`);
+                    if (row) { row.style.opacity = '0'; row.style.transition = 'opacity 0.3s'; setTimeout(() => row.remove(), 300); }
+                    const count = document.getElementById('requests-count');
+                    if (count) { const n = parseInt(count.textContent) - 1; count.textContent = `${n} pending`; }
+                    loadStats();
+                } else { showToast(data.error || 'Failed to approve', 'error'); }
+            } catch (e) { showToast('Server error', 'error'); }
+        }
+
+        // Reject user
+        async function rejectUser(userId, userName) {
+            try {
+                const res = await fetch(`${API_BASE_URL}/admin/reject/${userId}`, { method: 'PUT', headers: authHeaders() });
+                const data = await res.json();
+                if (data.success) {
+                    showToast(`${userName}'s request has been rejected.`, 'warning');
+                    const row = document.getElementById(`row-${userId}`);
+                    if (row) { row.style.opacity = '0'; row.style.transition = 'opacity 0.3s'; setTimeout(() => row.remove(), 300); }
+                    const count = document.getElementById('requests-count');
+                    if (count) { const n = parseInt(count.textContent) - 1; count.textContent = `${n} pending`; }
+                    loadStats();
+                } else { showToast(data.error || 'Failed to reject', 'error'); }
+            } catch (e) { showToast('Server error', 'error'); }
+        }
+
+        // Admin logout
+        function adminLogout() {
+            localStorage.removeItem('adminToken');
+            localStorage.removeItem('adminUser');
+            window.location.href = 'admin-login.html';
+        }
+
+        // Init
+        loadStats();
+    </script>
+</body>
+
+</html>

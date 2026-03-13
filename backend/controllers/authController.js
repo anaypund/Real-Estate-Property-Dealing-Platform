@@ -8,16 +8,23 @@ exports.register = async (req, res, next) => {
     try {
         const { name, email, password, role, phone } = req.body;
 
-        // Create user
+        // Create user (isApproved defaults to false - pending admin review)
         const user = await User.create({
             name,
             email,
             password,
             role,
-            phone
+            phone,
+            isApproved: false,
+            status: 'pending'
         });
 
-        sendTokenResponse(user, 201, res);
+        // Do NOT send token - account needs admin approval first
+        res.status(201).json({
+            success: true,
+            pendingApproval: true,
+            message: 'Account created successfully. Your account is under review and you will be notified once approved.'
+        });
     } catch (error) {
         next(error);
     }
@@ -58,6 +65,22 @@ exports.login = async (req, res, next) => {
             });
         }
 
+        // Check if account is approved (skip check for admin)
+        if (!user.isAdmin && !user.isApproved) {
+            if (user.status === 'rejected') {
+                return res.status(403).json({
+                    success: false,
+                    error: 'account_rejected',
+                    message: 'Your account request was not approved. Please contact support.'
+                });
+            }
+            return res.status(403).json({
+                success: false,
+                error: 'account_pending',
+                message: 'Your account is still under review. Please wait for admin approval.'
+            });
+        }
+
         sendTokenResponse(user, 200, res);
     } catch (error) {
         next(error);
@@ -92,7 +115,8 @@ const sendTokenResponse = (user, statusCode, res) => {
             id: user._id,
             name: user.name,
             email: user.email,
-            role: user.role
+            role: user.role,
+            isAdmin: user.isAdmin
         }
     });
 };
